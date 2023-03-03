@@ -1,0 +1,20 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-triluxyapp-staging-185456-authRole",
+      "UnauthRoleArn": "arn:aws:iam::014945474627:role/amplify-triluxyapp-staging-185456-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::014945474627:role/amplify-triluxyapp-staging-185456-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-triluxyapp-staging-185456-deployment",
+      "UnauthRoleName": "amplify-triluxyapp-staging-185456-unauthRole",
+      "StackName": "amplify-triluxyapp-staging-185456",
+      "StackId": "arn:aws:cloudformation:us-east-1:014945474627:stack/amplify-triluxyapp-staging-185456/7efe2170-6772-11ed-8093-0e90c955c297",
+      "AmplifyAppId": "d25tp22yxhso58"
+    },
+    "categories": {
+      "auth": {
+        "triluxyapp": {}
+      }
+    }
+  }
+}

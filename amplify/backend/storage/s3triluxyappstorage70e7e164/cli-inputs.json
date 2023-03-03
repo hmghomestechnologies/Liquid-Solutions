@@ -1,0 +1,16 @@
+{
+  "resourceName": "s3triluxyappstorage70e7e164",
+  "bucketName": "triluxy-app-storage-70e7e164",
+  "policyUUID": "2eda470a",
+  "storageAccess": "authAndGuest",
+  "guestAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ]
+}
