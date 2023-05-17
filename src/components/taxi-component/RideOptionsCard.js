@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
   Image,
+  Modal,
 } from "react-native";
 import React from "react";
 import { colors, FONTS, SIZES } from "../../../constants/theme";
@@ -18,10 +19,11 @@ import baseURL from "../../../constants/baseURL";
 import { useAuthContext } from "../../../context/AuthContext";
 import { useWalletContext } from "../../../context/WalletContext";
 import { OutlinedSecBtn, PrimaryBtn, SecBtn } from "../Forms";
-import { AntDesign, FontAwesome } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
 import { v4 as uuidv4 } from "uuid";
 import TransparentSpinner from "../TransparentSpinner";
+import { generateUniqueId } from "../../../constants/functions";
 
 const RideOptionsCard = () => {
   const [selected, setSelected] = useState(null);
@@ -45,30 +47,6 @@ const RideOptionsCard = () => {
   const { rides } = useTaxiContext();
   const { walletBal, setTransactions } = useWalletContext();
   const pricePerMile = 335;
-
-  const data = [
-    {
-      id: 1,
-      title: "Standard",
-      multiplier: 1,
-      image:
-        "https://stockphoto.com/samples/Nzc1MDc0MjUwMDAxMWY1YmNmYjBlZA==/MjIxMWY1YmNmYjBlZA==/red-car--on-white-background.jpg&size=1024",
-    },
-    {
-      id: 2,
-      title: "Executive",
-      multiplier: 1.8,
-      image:
-        "https://stockphoto.com/samples/NDc4OTA5MTEwMDAxMWY1YmNmYjBlZA==/MjIxMWY1YmNmYjBlZA==/car-closeup.jpg&size=1024",
-    },
-    {
-      id: 3,
-      title: "Luxury",
-      multiplier: 2.6,
-      image:
-        "https://stockphoto.com/samples/MzUyOTQ0NjAwMDAxMWY1YmNmYjBlZA==/MjIxMWY1YmNmYjBlZA==/black-car.jpg&size=1024",
-    },
-  ];
   function getPrice(number) {
     setPrice(
       parseInt(travelTimeInformation?.distance?.text) * number * pricePerMile
@@ -87,16 +65,21 @@ const RideOptionsCard = () => {
   };
   const onPayWithWallet = async () => {
     setLoading(true);
-    const transId = uuidv4();
-    const transRef = "TRX" + uuidv4() + "REF";
+    const transId = generateUniqueId();
+    const transRef = generateUniqueId() + "-REF";
     let payData = {
       userId: authUser?._id,
       desc: "Payment for Booking Taxi",
       transactionId: transId,
       transactionRef: transRef,
-      amount: price,
+      amount: price.toFixed(0),
       transType: "DEBIT",
       paymentMode: "WALLET",
+      notDesc: `Your wallet have been Debit with sum of ${price.toFixed(
+        0
+      )} with transactional ID ${transId} and reference ${transRef}. Payment for your Booking a Taxi.`,
+      notTitle: "Alert!!!, Wallet Debited",
+      notType: "Wallet",
     };
     let bookingData = {
       userId: authUser?._id,
@@ -197,7 +180,13 @@ const RideOptionsCard = () => {
   };
   if (loading) return <TransparentSpinner />;
   return (
-    <SafeAreaView style={{ backgroundColor: "white", height: "100%" }}>
+    <SafeAreaView
+      style={{
+        backgroundColor: "white",
+        height: "100%",
+        paddingHorizontal: 20,
+      }}
+    >
       <Text
         style={{
           fontSize: SIZES.large,
@@ -224,9 +213,12 @@ const RideOptionsCard = () => {
               justifyContent: "space-between",
               alignItems: "center",
               paddingHorizontal: 20,
-              marginVertical: 5,
+              marginVertical: 10,
               backgroundColor: _id === selected?._id ? "#dee2e6" : "white",
               paddingVertical: 10,
+              borderRadius: 10,
+              borderColor: "#dee2e6",
+              borderWidth: 1,
             }}
           >
             <Image
@@ -288,15 +280,13 @@ const RideOptionsCard = () => {
         </Text>
       </TouchableOpacity>
       {/* Payment Container */}
-      {showPaymentCont && (
+      <Modal transparent={true} visible={showPaymentCont}>
         <View
           style={{
             height: "100%",
             width: "100%",
             backgroundColor: "rgba(0, 0, 0, 0.6)",
-            position: "absolute",
-            bottom: 0,
-            zIndex: 10,
+            flex: 1,
             justifyContent: "center",
             alignItems: "center",
           }}
@@ -314,22 +304,6 @@ const RideOptionsCard = () => {
               position: "relative",
             }}
           >
-            <View style={{ position: "absolute", right: 20, top: 20 }}>
-              <View
-                style={{
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Text>Wallet Bal.</Text>
-                <FormatedNumber
-                  value={walletBal}
-                  color="green"
-                  size={SIZES.medium}
-                />
-              </View>
-            </View>
             <View style={{}}>
               <View
                 style={{
@@ -349,7 +323,7 @@ const RideOptionsCard = () => {
                   Pay to Complete your Booking
                 </Text>
                 <FormatedNumber
-                  value={price}
+                  value={price.toFixed(0)}
                   size={SIZES.large}
                   color={colors.primary}
                 />
@@ -373,7 +347,7 @@ const RideOptionsCard = () => {
             <FontAwesome name="times-circle-o" size={40} color="red" />
           </TouchableOpacity>
         </View>
-      )}
+      </Modal>
     </SafeAreaView>
   );
 };

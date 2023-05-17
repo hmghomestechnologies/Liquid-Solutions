@@ -41,7 +41,7 @@ const FlightDetailsHeader = ({ location, dates, type, text, white }) => {
             style={{
               marginLeft: 5,
               fontFamily: FONTS.semiBold,
-              fontSize: SIZES.medium,
+              fontSize: 12,
               color: white ? colors.secondary : "white",
             }}
           >
@@ -56,9 +56,10 @@ const FlightDetailsHeader = ({ location, dates, type, text, white }) => {
             <Text
               style={{
                 fontWeight: "500",
-                fontSize: SIZES.large,
+                fontSize: SIZES.medium,
                 fontFamily: FONTS.semiBold,
                 color: white ? colors.secondary : "white",
+                fontStyle: "italic",
               }}
             >
               {location}
@@ -66,12 +67,6 @@ const FlightDetailsHeader = ({ location, dates, type, text, white }) => {
             <Text style={{ color: "white", fontWeight: "500" }}>{dates}</Text>
           </View>
         )}
-      </View>
-      <View>
-        <Ionicons name="share-outline" size={24} color="white" />
-        {/* <Text style={{ fontSize: 10, textAlign: "center", color: "white" }}>
-          Share
-        </Text> */}
       </View>
     </View>
   );

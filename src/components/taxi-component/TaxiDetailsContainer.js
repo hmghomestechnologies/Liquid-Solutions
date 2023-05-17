@@ -131,7 +131,7 @@ const TaxiDetailsContainer = () => {
               marginVertical: 5,
             }}
           >
-            Plate Number: {licenseNumber}
+            License Number: {licenseNumber.toUpperCase()}
             {console.log(driver)}
           </Text>
           <View style={{ height: 100, width: 150 }}>

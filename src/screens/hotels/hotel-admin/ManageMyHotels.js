@@ -1,4 +1,4 @@
-import { View, Text, FlatList, TouchableOpacity } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Image } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useAuthContext } from "../../../../context/AuthContext";
 import axios from "axios";
@@ -7,7 +7,6 @@ import Spinner from "react-native-loading-spinner-overlay";
 import { colors, FONTS, SIZES } from "../../../../constants/theme";
 import { MapMarker, NoResult } from "../../../components";
 import { containerMedium } from "../../../../constants/layouts";
-import { S3Image } from "aws-amplify-react-native";
 import { useNavigation } from "@react-navigation/native";
 
 const ManageMyHotels = () => {
@@ -50,8 +49,8 @@ const ManageMyHotels = () => {
         }
       >
         <View style={{ width: "30%" }}>
-          <S3Image
-            imgKey={item.fImg}
+          <Image
+            source={{ uri: item?.fImg }}
             style={{
               height: 80,
               width: 80,

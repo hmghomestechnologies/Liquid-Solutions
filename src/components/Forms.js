@@ -148,7 +148,6 @@ export const InputField = ({
         placeholder={placeholder}
         onChangeText={(text) => setInput(text)}
         style={{
-          fontFamily: "OpenSansMedium",
           color: colors.secondary,
           width: "100%",
           paddingHorizontal: 15,

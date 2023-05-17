@@ -32,6 +32,8 @@ import { SearchedHotel } from "../../../components/hotel-components";
 import { cities } from "../../../../constants/cities";
 import { useRestaurantContext } from "../../../../context/RestaurantContext";
 import { TransparentSpinner } from "../../../components";
+import { Picker } from "@react-native-picker/picker";
+import { states } from "../../../../constants/states";
 
 const AddRestaurantDetails = () => {
   const [screenLoading, setScreenLoading] = useState(true);
@@ -63,15 +65,46 @@ const AddRestaurantDetails = () => {
       quality: 0.7,
       allowsEditing: true,
     });
-    if (!result.cancelled) {
-      setFImg(result.uri);
-    } else {
-      Toast.show({
-        topOffset: 60,
-        type: "error",
-        text1: "Something Went wrong, While uploading Restaurant Image",
-        text2: "Please Try Again",
-      });
+    if (!result.canceled) {
+      setOnLoading(true);
+      const source = {
+        uri: result.assets[0].uri,
+        type: "image/jpeg",
+        name: "Restaurant.jpg",
+      };
+      const data = new FormData();
+      data.append("file", source);
+      data.append("upload_preset", "triluxyapp");
+      data.append("cloud_name", "dc5ulgooc");
+      fetch("https://api.cloudinary.com/v1_1/dc5ulgooc/image/upload", {
+        method: "POST",
+        body: data,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "multipart/form-data",
+        },
+      })
+        .then((res) => res.json())
+        .then(async (data) => {
+          Toast.show({
+            topOffset: 60,
+            type: "success",
+            text1: "Image Uploaded Successfully",
+            text2: "You can now Proceed",
+          });
+          setFImg(data?.secure_url);
+          setOnLoading(false);
+        })
+        .catch((err) => {
+          setOnLoading(false);
+          Toast.show({
+            topOffset: 60,
+            type: "error",
+            text1: "Error Occured, Couldn't Image",
+            text2: "Please Try Again",
+          });
+          console.log(err);
+        });
     }
   };
   const searchRestaunts = async (text) => {
@@ -127,8 +160,7 @@ const AddRestaurantDetails = () => {
       terms,
       user: userId,
     };
-    // Upload Images
-    restaurantDetails.fImg = await uploadRestaurantImage(fImg);
+    console.log(restaurantDetails);
     // Save to db
     await axios
       .post(`${baseURL}/restaurant/admin`, restaurantDetails, config)
@@ -155,29 +187,23 @@ const AddRestaurantDetails = () => {
       })
       .catch((error) => {
         console.log(error);
-        Toast.show({
-          topOffset: 60,
-          type: "error",
-          text1: "Something Went wrong",
-          text2: "Please Try Again",
-        });
         setOnLoading(false);
+        if (error?.response?.data?.message === undefined) {
+          Toast.show({
+            topOffset: 60,
+            type: "error",
+            text1: `${error?.message}`,
+            text2: "Please Try Again",
+          });
+        } else {
+          Toast.show({
+            topOffset: 60,
+            type: "error",
+            text1: `${error?.response?.data?.message}`,
+            text2: "Please Try Again",
+          });
+        }
       });
-  };
-  // Restaurant Image Upload Function
-
-  const uploadRestaurantImage = async (fileUri) => {
-    try {
-      const response = await fetch(fileUri);
-      const blob = await response.blob();
-      const key = `${uuidv4()}.png`;
-      await Storage.put(key, blob, {
-        contentType: "image/png", // contentType is optional
-      });
-      return key;
-    } catch (err) {
-      console.log("Error uploading file:", err);
-    }
   };
   return (
     <>
@@ -349,13 +375,31 @@ const AddRestaurantDetails = () => {
             />
           </View>
         )}
-        <InputField
-          value={state}
-          placeholder="State"
-          Icon={Ionicons}
-          iconName="color-filter-outline"
-          setInput={setState}
-        />
+        {/* State Picker */}
+        <View
+          style={{
+            backgroundColor: "white",
+            borderWidth: 1,
+            borderColor: colors.darkSecondary,
+            borderRadius: 10,
+            marginVertical: 5,
+            paddingHorizontal: 4,
+          }}
+        >
+          <Picker
+            selectedValue={state}
+            style={{
+              height: 50,
+              width: "100%",
+            }}
+            onValueChange={(itemValue) => setState(itemValue)}
+          >
+            <Picker.Item label="Choose State" value="" />
+            {states.map((item, index) => (
+              <Picker.Item key={index} label={item.state} value={item.state} />
+            ))}
+          </Picker>
+        </View>
         <InputField
           value={openDaysStart}
           placeholder="Restaurant Opening Day"

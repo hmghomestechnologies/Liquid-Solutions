@@ -50,7 +50,7 @@ const ResSearchResult = () => {
           top: 17,
           width: "100%",
           backgroundColor: "white",
-          paddingTop: 5,
+          // paddingTop: 5,
           zIndex: 10,
         }}
       >

@@ -33,7 +33,7 @@ const CarInfoScreen = () => {
     carColor,
     carDesc,
     carDocuments,
-    carImages,
+    carImage,
     carModel,
     carSpecs,
     plateNumber,
@@ -66,8 +66,18 @@ const CarInfoScreen = () => {
   if (loading || !carOwner) return <TransparentSpinner />;
   return (
     <ScrollView style={{ marginTop: 20 }}>
-      <View style={{ width: "100%" }}>
-        <ImageSlider images={carImages} />
+      <View
+        style={{
+          width: "100%",
+          height: 250,
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          paddingHorizontal: 50,
+          paddingVertical: 20,
+        }}
+      >
+        <ImageCont source={carImage} />
       </View>
       <View style={{ paddingHorizontal: 20 }}>
         <View
@@ -132,7 +142,7 @@ const CarInfoScreen = () => {
             <Text style={styles.textSub}>{carColor}</Text>
           </View>
         </View>
-        <View style={{ marginVertical: 15 }}>
+        {/* <View style={{ marginVertical: 15 }}>
           <SubHeader text={"Car Specs"} color={colors.primary} />
           <View style={{ marginTop: 5 }}>
             {carSpecs.map((e, index) => (
@@ -149,7 +159,7 @@ const CarInfoScreen = () => {
               </View>
             ))}
           </View>
-        </View>
+        </View> */}
         {/* Car Owner Info */}
         <View style={styles.miniCont}>
           <SubHeader text={"Car Owner Details"} />

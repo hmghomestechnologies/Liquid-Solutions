@@ -80,11 +80,27 @@ const RoomItem = ({ category, searchedData, calDays }) => {
       <LineDivider />
       <View>
         <Text>Price for {`${calDays} Nights.`}</Text>
-        <FormatedNumber
-          value={category?.price * calDays}
-          color={colors.secondary}
-          size={SIZES.extraLarge}
-        />
+        {category?.discountedPrice === 0 ? (
+          <FormatedNumber
+            value={category?.price * calDays}
+            color={colors.secondary}
+            size={SIZES.extraLarge}
+          />
+        ) : (
+          <>
+            <FormatedNumber
+              value={category?.price * calDays}
+              color={colors.secondary}
+              size={SIZES.extraLarge}
+              isStrike={true}
+            />
+            <FormatedNumber
+              value={category?.discountedPrice * calDays}
+              color={colors.secondary}
+              size={SIZES.extraLarge}
+            />
+          </>
+        )}
         <Text style={{ fontSize: SIZES.small, color: colors.gray }}>
           Includes tax and fees
         </Text>

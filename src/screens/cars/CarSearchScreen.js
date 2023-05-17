@@ -23,6 +23,7 @@ import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplet
 import { useCarContext } from "../../../context/CarContext";
 import { CarMapContainer } from "../../components/car-components";
 import Toast from "react-native-toast-message";
+import moment from "moment";
 
 const CarSearchScreen = () => {
   const [activeSame, setActiveSame] = useState(true);
@@ -53,6 +54,8 @@ const CarSearchScreen = () => {
   };
 
   const onSearchCar = () => {
+    const start = moment(pickupDate, "YYYY-MM-DD");
+    const end = moment(returnDate, "YYYY-MM-DD");
     if (pickupDate === "Choose Date") {
       Toast.show({
         topOffset: 60,
@@ -66,6 +69,14 @@ const CarSearchScreen = () => {
         type: "error",
         text1: "Return Date is required",
         text2: "Please Choose your Return Date",
+      });
+    } else if (end.isSameOrBefore(start)) {
+      // End date is less than or equal to start date
+      Toast.show({
+        topOffset: 60,
+        type: "error",
+        text1: "Please Choose Return Date Again",
+        text2: "Pickup and Return Date Must be not the Same",
       });
     } else if (!pickupLocation?.location?.lng) {
       Toast.show({
@@ -492,7 +503,6 @@ const CarSearchScreen = () => {
                 query={{
                   key: GOOGLE_MAPS_APIKEY,
                   language: "en",
-                  components: "country:ng",
                 }}
               />
             </View>
@@ -561,7 +571,6 @@ const CarSearchScreen = () => {
                 query={{
                   key: GOOGLE_MAPS_APIKEY,
                   language: "en",
-                  components: "country:ng",
                 }}
               />
             </View>

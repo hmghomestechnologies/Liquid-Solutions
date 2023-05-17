@@ -23,7 +23,7 @@ import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import { OutlinedSecBtn, PrimaryBtn, SecBtn } from "../../components/Forms";
 import { CarMapContainer } from "../../components/car-components";
 import { useCarContext } from "../../../context/CarContext";
-import { getWordDate } from "../../../constants/functions";
+import { generateUniqueId, getWordDate } from "../../../constants/functions";
 import { useEffect } from "react";
 import { useAuthContext } from "../../../context/AuthContext";
 import axios from "axios";
@@ -82,22 +82,11 @@ const CarDetailsScreen = () => {
     "December",
   ];
   const calDate = () => {
-    let checkOutArray = returnDate.split("-");
-    let newCheckOutDateFormat = `${monthNames[checkOutArray[1] - 1]} ${
-      checkOutArray[2]
-    }, ${checkOutArray[0]}`;
-    let checkInArray = pickupDate.split("-");
-    let newCheckInDateFormat = `${monthNames[checkInArray[1] - 1]} ${
-      checkInArray[2]
-    }, ${checkInArray[0]}`;
-    var x = new Date(newCheckOutDateFormat);
-    var y = new Date(newCheckInDateFormat);
-    // seconds = milliseconds / 1000;
-    // minutes = seconds / 60;
-    // hours = minutes / 60;
-    // Days = hours / 24;
-    const diffInDays = Math.floor((x - y) / (1000 * 60 * 60 * 24));
-    setCalDays(diffInDays);
+    const date1 = new Date(pickupDate);
+    const date2 = new Date(returnDate);
+    const diffTime = Math.abs(date2.getTime() - date1.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    setCalDays(diffDays);
   };
   const amount = pricePerDay * calDays;
   const config = {
@@ -140,8 +129,8 @@ const CarDetailsScreen = () => {
   };
   const onPayWithWallet = async () => {
     setLoading(true);
-    const transId = uuidv4();
-    const transRef = "TRX" + uuidv4() + "REF";
+    const transId = generateUniqueId();
+    const transRef = generateUniqueId() + "-REF";
     let payData = {
       userId: authUser?._id,
       desc: "Payment for Renting Car",
@@ -150,6 +139,9 @@ const CarDetailsScreen = () => {
       amount: amount,
       transType: "DEBIT",
       paymentMode: "WALLET",
+      notDesc: `Your wallet have been Debit with sum of ${amount} with transactional ID ${transId} and reference ${transRef}. Payment for your Booking ${carColor}, ${carName} car.`,
+      notTitle: "Alert!!!, Wallet Debited",
+      notType: "Wallet",
     };
     let bookingData = {
       userId: authUser?._id,
@@ -258,8 +250,7 @@ const CarDetailsScreen = () => {
   };
   if (loading || !carOwner) return <TransparentSpinner />;
   return (
-    <View style={{ paddingTop: 31 }}>
-      <SearchResultHeader head="" />
+    <View style={{}}>
       <ScrollView style={{ marginTop: 20 }}>
         <View style={{ width: "100%", height: 250, paddingHorizontal: 30 }}>
           <ImageCont source={carImage} />
@@ -421,7 +412,18 @@ const CarDetailsScreen = () => {
             </Text>
           </View>
           <View style={{ marginVertical: 15 }}>
-            <SubHeader text={"Car Specs"} color={colors.primary} />
+            <SubHeader text={"Description"} color={colors.secondary} />
+            <View style={styles.miniCont}>
+              <Text
+                style={{
+                  fontSize: SIZES.medium,
+                  textAlign: "justify",
+                  color: "gray",
+                }}
+              >
+                {carDesc}
+              </Text>
+            </View>
             {/* <View style={{ marginTop: 5 }}>
               {carSpecs.map((e, index) => (
                 <View
@@ -502,7 +504,7 @@ const CarDetailsScreen = () => {
       <View
         style={{
           position: "absolute",
-          bottom: 55,
+          bottom: 10,
           width: "100%",
           paddingHorizontal: 20,
         }}
@@ -536,7 +538,7 @@ const CarDetailsScreen = () => {
               position: "relative",
             }}
           >
-            <View style={{ position: "absolute", right: 20, top: 20 }}>
+            {/* <View style={{ position: "absolute", right: 20, top: 20 }}>
               <View
                 style={{
                   flexDirection: "column",
@@ -551,7 +553,7 @@ const CarDetailsScreen = () => {
                   size={SIZES.medium}
                 />
               </View>
-            </View>
+            </View> */}
             <View style={{}}>
               <View
                 style={{

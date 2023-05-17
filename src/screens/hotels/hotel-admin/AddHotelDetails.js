@@ -31,7 +31,7 @@ import { Picker } from "@react-native-picker/picker";
 import { states } from "../../../../constants/states";
 
 const AddHotelDetails = () => {
-  const [fImg, setFImg] = useState("");
+  const [fImg, setFImg] = useState(null);
   const [hotelName, setHotelName] = useState("");
   const [address, setAddress] = useState("");
   const [town, setTown] = useState("");
@@ -61,8 +61,8 @@ const AddHotelDetails = () => {
       quality: 0.7,
       allowsEditing: true,
     });
-    if (!result.cancelled) {
-      setFImg(result.uri);
+    if (!result.canceled) {
+      setFImg(result.assets[0]);
     } else {
       Toast.show({
         topOffset: 60,
@@ -101,7 +101,7 @@ const AddHotelDetails = () => {
       town === "" ||
       state === "" ||
       description === "" ||
-      fImg === ""
+      fImg === null
     ) {
       Toast.show({
         topOffset: 60,
@@ -110,61 +110,90 @@ const AddHotelDetails = () => {
         text2: "Please Filled all Fields",
       });
       setOnLoading(false);
-    }
-    // Get and Arrange Data
-    let hotelDetails = {
-      hotelName,
-      fImg,
-      address,
-      state,
-      town,
-      description,
-      terms,
-    };
-    // Upload Images
-    hotelDetails.fImg = await uploadfImg(fImg);
-    console.log(hotelDetails);
-    // Save to db
-    await axios
-      .post(`${baseURL}/hotel`, hotelDetails, config)
-      .then((res) => {
-        if (res.status == 201) {
+    } else {
+      // Upload Images
+      const source = {
+        uri: fImg.uri,
+        type: "image/jpeg",
+        name: "hotelFImg.jpg",
+      };
+      const data = new FormData();
+      data.append("file", source);
+      data.append("upload_preset", "triluxyapp");
+      data.append("cloud_name", "dc5ulgooc");
+      await fetch("https://api.cloudinary.com/v1_1/dc5ulgooc/image/upload", {
+        method: "POST",
+        body: data,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "multipart/form-data",
+        },
+      })
+        .then((res) => res.json())
+        .then(async (data) => {
+          if (data.secure_url) {
+            let hotelDetails = {
+              hotelName,
+              fImg: data?.secure_url,
+              address,
+              state,
+              town,
+              description,
+              terms,
+            };
+            await axios
+              .post(`${baseURL}/hotel`, hotelDetails, config)
+              .then((res) => {
+                if (res.status == 201) {
+                  Toast.show({
+                    topOffset: 60,
+                    type: "success",
+                    text1: "Hotel Details Added Succesfully",
+                    text2: "You can now Manage Your Hotels",
+                  });
+                  setOnLoading(false);
+                  setHotelName("");
+                  setFImg(null);
+                  setAddress("");
+                  setState("");
+                  setDescription("");
+                  setTerms("");
+                  setTimeout(() => {
+                    navigation.navigate("ManageMyHotels");
+                  }, 500);
+                }
+              })
+              .catch((error) => {
+                console.log(error.response.data.message);
+                Toast.show({
+                  topOffset: 60,
+                  type: "error",
+                  text1: `${error.response.data.message}`,
+                  text2: "Please Try Again",
+                });
+                setOnLoading(false);
+              });
+            console.log(data?.error?.message);
+          } else {
+            setOnLoading(false);
+            Toast.show({
+              topOffset: 60,
+              type: "error",
+              text1: `${data?.error?.message}`,
+              text2: "Please Try Again",
+            });
+          }
+        })
+        .catch((err) => {
+          setOnLoading(false);
           Toast.show({
             topOffset: 60,
-            type: "success",
-            text1: "Hotel Details Added Succesfully",
-            text2: "You can now Manage Your Hotels",
+            type: "error",
+            text1: "Error Occured, Couldn't Image",
+            text2: "Please Try Again",
           });
-          setOnLoading(false);
-          setTimeout(() => {
-            navigation.navigate("ManageMyHotels");
-          }, 500);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        Toast.show({
-          topOffset: 60,
-          type: "error",
-          text1: "Something Went wrong",
-          text2: "Please Try Again",
+          console.log(err);
         });
-        setOnLoading(false);
-      });
-  };
-  // Hotel Image Upload Function
-
-  const uploadfImg = async (fileUri) => {
-    try {
-      const response = await fetch(fileUri);
-      const blob = await response.blob();
-      const key = `${uuidv4()}.png`;
-      await Storage.put(key, blob, {
-        contentType: "image/png", // contentType is optional
-      });
-      return key;
-    } catch (err) {
-      console.log("Error uploading file:", err);
     }
   };
 
@@ -199,7 +228,7 @@ const AddHotelDetails = () => {
           >
             {fImg ? (
               <Image
-                source={{ uri: fImg }}
+                source={{ uri: fImg.uri }}
                 style={{ height: "100%", width: "80%" }}
               />
             ) : (
@@ -223,7 +252,7 @@ const AddHotelDetails = () => {
           Icon={Ionicons}
           iconName="color-filter-outline"
           setInput={setAddress}
-        />
+        /> 
         {/* State Picker */}
         <View
           style={{

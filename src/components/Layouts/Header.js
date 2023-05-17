@@ -6,8 +6,14 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-import React from "react";
-import { colors, homeImg, SHADOWS } from "../../../constants/theme";
+import React, { useEffect, useState } from "react";
+import {
+  colors,
+  FONTS,
+  homeImg,
+  SHADOWS,
+  SIZES,
+} from "../../../constants/theme";
 import {
   Ionicons,
   Entypo,
@@ -17,15 +23,21 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { useAuthContext } from "../../../context/AuthContext";
 
-const Header = ({ placeholder, active, searchPath }) => {
+const Header = ({ placeholder, active, notLength }) => {
+  const { authUser } = useAuthContext();
   const navigation = useNavigation();
   return (
-    <View
+    <ImageBackground
+      source={{
+        uri: "https://res.cloudinary.com/dc5ulgooc/image/upload/v1679726548/homeBg_ppyljx.jpg",
+      }}
       style={{
         width: "100%",
         backgroundColor: colors.secondary,
         paddingTop: 40,
+        // height: 250,
       }}
     >
       <View
@@ -44,7 +56,7 @@ const Header = ({ placeholder, active, searchPath }) => {
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Image
               source={{
-                uri: "https://stockphoto.com/samples/MzQyNTI0MjUwMDAxMWY1YmNmYjBlZA==/MjIxMWY1YmNmYjBlZA==/happy-smiling--man-with-glasses-leaning-against-brick-wall-.jpg&size=1024",
+                uri: authUser?.profileImg,
               }}
               style={{ height: 45, width: 45, borderRadius: 100 }}
             />
@@ -56,7 +68,7 @@ const Header = ({ placeholder, active, searchPath }) => {
                 marginLeft: 8,
               }}
             >
-              Hi, Stella
+              Hi, {authUser?.name}
             </Text>
           </View>
           {/* Icon */}
@@ -64,23 +76,49 @@ const Header = ({ placeholder, active, searchPath }) => {
             onPress={() => navigation.navigate("Notifications")}
             style={{ position: "relative" }}
           >
-            <Entypo
+            {/* <Entypo
               name="dot-single"
               size={40}
               color="red"
-              style={{ position: "absolute", right: -3, top: -12, zIndex: 1 }}
+              
+            /> */}
+            {notLength > 0 && (
+              <Text
+                style={{
+                  position: "absolute",
+                  right: -8,
+                  top: 2,
+                  zIndex: 1,
+                  backgroundColor: colors.errorColor,
+                  borderRadius: 999,
+                  color: "white",
+                  paddingVertical: 2,
+                  paddingHorizontal: 5,
+                }}
+              >
+                {notLength <= 99 ? notLength : "99+"}
+              </Text>
+            )}
+            <Ionicons
+              name="notifications-circle"
+              size={40}
+              color={colors.secondary}
             />
-            <Ionicons name="notifications-outline" size={30} color={"white"} />
           </TouchableOpacity>
         </View>
-        <Text style={{ color: "white", marginVertical: 5 }}>
-          What do you want to do today?
+        <Text
+          style={{
+            color: colors.secondary,
+            marginVertical: 15,
+            fontFamily: FONTS.bold,
+            fontStyle: "italic",
+            fontSize: SIZES.medium,
+          }}
+        >
+          Where do you want to stay today?
         </Text>
       </View>
-      <ImageBackground
-        source={{
-          uri: "https://stockphoto.com/samples/NjkwNTc5NDE0MDAxMWY1YmNmYjBlZA==/MjIxMWY1YmNmYjBlZA==/giraffe-walking-on-the-plains-of-the-masai-mara-national-park-in-kenya.jpg&size=1024",
-        }}
+      <View
         style={{
           height: 100,
           width: "100%",
@@ -100,7 +138,7 @@ const Header = ({ placeholder, active, searchPath }) => {
               borderRadius: 10,
               ...SHADOWS.dark,
             }}
-            onPress={() => navigation.navigate(searchPath)}
+            onPress={() => navigation.navigate("HotelSearchScreen")}
           >
             <Ionicons
               name="md-search-circle-sharp"
@@ -109,17 +147,8 @@ const Header = ({ placeholder, active, searchPath }) => {
             />
             <Text style={{ color: "gray", marginLeft: 5 }}>{placeholder}</Text>
           </TouchableOpacity>
-          {/* <InputField
-            // value={email}
-            placeholder={placeholder}
-            Icon={AntDesign}
-            iconName="search1"
-            // setInput={setEmail}
-            background="white"
-            noBorder
-          /> */}
         </View>
-      </ImageBackground>
+      </View>
       {/* Icons */}
       <View
         style={{
@@ -132,7 +161,7 @@ const Header = ({ placeholder, active, searchPath }) => {
       >
         <TouchableOpacity
           style={styles.iconContainer}
-          onPress={() => navigation.navigate("FlightHome")}
+          onPress={() => navigation.navigate("FlightSearchScreen")}
         >
           <MaterialIcons
             name="flight"
@@ -150,17 +179,17 @@ const Header = ({ placeholder, active, searchPath }) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.iconContainer}
-          onPress={() => navigation.navigate("HotelHome")}
+          onPress={() => navigation.navigate("HotelSearchScreen")}
         >
           <FontAwesome5
             name="hotel"
             size={30}
-            color={active === "hotel" ? colors.primary : "white"}
+            color={active === "hotel" ? "white" : "white"}
           />
           <Text
             style={[
               styles.text,
-              { color: active === "hotel" ? colors.primary : "white" },
+              { color: active === "hotel" ? "white" : "white" },
             ]}
           >
             Hotels
@@ -168,7 +197,7 @@ const Header = ({ placeholder, active, searchPath }) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.iconContainer}
-          onPress={() => navigation.navigate("CarHome")}
+          onPress={() => navigation.navigate("CarSearchScreen")}
         >
           <AntDesign
             name="car"
@@ -209,19 +238,19 @@ const Header = ({ placeholder, active, searchPath }) => {
           <Ionicons
             name="restaurant"
             size={30}
-            color={active === "restaurants" ? colors.primary : "white"}
+            color={active === "restaurants" ? "white" : "white"}
           />
           <Text
             style={[
               styles.text,
-              { color: active === "restaurants" ? colors.primary : "white" },
+              { color: active === "restaurants" ? "white" : "white" },
             ]}
           >
             Restaurants
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ImageBackground>
   );
 };
 

@@ -14,8 +14,11 @@ import {
   TaxiBookingDetails,
 } from "../screens/Bookings";
 import {
+  FlightBookingScreen,
   FlightDetailsScreen,
   FlightHome,
+  FlightPaymentScreen,
+  FlightPaymentSelectorScreen,
   FlightSearchResult,
   FlightSearchScreen,
 } from "../screens/flights";
@@ -23,6 +26,7 @@ import {
   HotelBookingScreen,
   HotelDetailsScreen,
   HotelHome,
+  HotelListItemDetails,
   HotelPaymentScreen,
   HotelSearchScreen,
   SearchResult,
@@ -65,6 +69,7 @@ import { useAuthContext } from "../../context/AuthContext";
 import {
   BasketPaymentScreen,
   BasketScreen,
+  DishesSearchResult,
   FoodMenuIndexScreen,
   ResSearchResult,
   RestaurantDetails,
@@ -79,6 +84,7 @@ import {
   ManageOrders,
   FilteredOrders,
   AddMenuItemScreen,
+  AddRestaurantDetails,
 } from "../screens/restaurants/restaurant-owner";
 import {
   FilterDeliveries,
@@ -88,6 +94,7 @@ import {
 } from "../screens/rider";
 import {
   ManageAccount,
+  NotificationDetails,
   Notifications,
   PrivacyPolicy,
   Settings,
@@ -101,6 +108,7 @@ import {
   ManageBookings,
   ManageMyHotels,
 } from "../screens/hotels/hotel-admin";
+import BasketCheckout from "../components/restaurant-components/BasketCheckout";
 
 const Stack = createStackNavigator();
 const AppStack = () => {
@@ -130,13 +138,80 @@ const AppStack = () => {
       <Stack.Screen
         name="FlightDetailsScreen"
         component={FlightDetailsScreen}
+        options={{
+          headerShown: true,
+          headerBackTitle: false,
+          headerTitle: "Flight Details",
+          headerTintColor: "white",
+          headerStyle: { backgroundColor: colors.secondary },
+          headerBackTitleVisible: false,
+        }}
+      />
+      <Stack.Screen
+        name="FlightBookingScreen"
+        component={FlightBookingScreen}
+        options={{
+          headerShown: true,
+          headerBackTitle: false,
+          headerTitle: "Flight Booking Details",
+          headerTintColor: "white",
+          headerStyle: { backgroundColor: colors.secondary },
+          headerBackTitleVisible: false,
+        }}
+      />
+      <Stack.Screen
+        name="FlightPaymentSelectorScreen"
+        component={FlightPaymentSelectorScreen}
+        options={{
+          headerShown: true,
+          headerBackTitle: false,
+          headerTitle: "Flight Booking Payment",
+          headerTintColor: "white",
+          headerStyle: { backgroundColor: colors.secondary },
+          headerBackTitleVisible: false,
+        }}
+      />
+      <Stack.Screen
+        name="FlightPaymentScreen"
+        component={FlightPaymentScreen}
+        options={{
+          headerShown: true,
+          headerBackTitle: false,
+          headerTitle: "Flight Booking Payment",
+          headerTintColor: "white",
+          headerStyle: { backgroundColor: colors.secondary },
+          headerBackTitleVisible: false,
+        }}
       />
       {/* Flights Screen Ends HEre*/}
       {/* Hotel Screens Screens Ends Here */}
       <Stack.Screen name="HotelHome" component={HotelHome} />
       <Stack.Screen name="HotelSearchScreen" component={HotelSearchScreen} />
       <Stack.Screen name="SearchResult" component={SearchResult} />
-      <Stack.Screen name="HotelDetailsScreen" component={HotelDetailsScreen} />
+      <Stack.Screen
+        name="HotelDetailsScreen"
+        options={{
+          headerShown: true,
+          headerBackTitle: false,
+          headerTitle: "Hotel Details",
+          headerTintColor: "white",
+          headerStyle: { backgroundColor: colors.secondary },
+          headerBackTitleVisible: false,
+        }}
+        component={HotelDetailsScreen}
+      />
+      <Stack.Screen
+        name="HotelListItemDetails"
+        options={{
+          headerShown: true,
+          headerBackTitle: false,
+          headerTitle: "Hotel Details",
+          headerTintColor: "white",
+          headerStyle: { backgroundColor: colors.secondary },
+          headerBackTitleVisible: false,
+        }}
+        component={HotelListItemDetails}
+      />
       <Stack.Screen name="SelectRoomScreen" component={SelectRoomScreen} />
       <Stack.Screen
         name="HotelBookingScreen"
@@ -233,7 +308,17 @@ const AppStack = () => {
       <Stack.Screen name="CarHome" component={CarHome} />
       <Stack.Screen name="CarSearchScreen" component={CarSearchScreen} />
       <Stack.Screen name="CarSearchResult" component={CarSearchResult} />
-      <Stack.Screen name="CarDetailsScreen" component={CarDetailsScreen} />
+      <Stack.Screen
+        name="CarDetailsScreen"
+        component={CarDetailsScreen}
+        options={{
+          headerShown: true,
+          headerBackTitle: false,
+          headerTitle: "Car Details",
+          headerTintColor: "white",
+          headerStyle: { backgroundColor: colors.secondary },
+        }}
+      />
       <Stack.Screen name="CarPaymentScreen" component={CarPaymentScreen} />
       <Stack.Screen
         name="CarInfoScreen"
@@ -467,7 +552,36 @@ const AppStack = () => {
       {/* Restaurants Screens Screens Ends Here */}
       <Stack.Screen name="RestaurantHome" component={RestaurantHome} />
       <Stack.Screen name="ResSearchResult" component={ResSearchResult} />
-      <Stack.Screen name="RestaurantDetails" component={RestaurantDetails} />
+      <Stack.Screen
+        name="RestaurantDetails"
+        component={RestaurantDetails}
+        options={{
+          headerShown: true,
+          headerTitle: "Restaurant Details",
+          headerTintColor: "white",
+          headerStyle: { backgroundColor: colors.secondary },
+        }}
+      />
+      <Stack.Screen
+        name="DishesSearchResult"
+        component={DishesSearchResult}
+        options={{
+          headerShown: true,
+          headerTitle: "Dishes Results",
+          headerTintColor: "white",
+          headerStyle: { backgroundColor: colors.secondary },
+        }}
+      />
+      <Stack.Screen
+        name="BasketCheckout"
+        component={BasketCheckout}
+        options={{
+          headerShown: true,
+          headerTitle: "Dishes Results",
+          headerTintColor: "white",
+          headerStyle: { backgroundColor: colors.secondary },
+        }}
+      />
       <Stack.Screen
         name="SingleRestaurant"
         component={SingleRestaurant}
@@ -505,6 +619,17 @@ const AppStack = () => {
           headerTitle: "My Restaurant",
           headerTintColor: "white",
           headerStyle: { backgroundColor: colors.secondary },
+        }}
+      />
+      <Stack.Screen
+        name="AddRestaurantDetails"
+        component={AddRestaurantDetails}
+        options={{
+          headerShown: true,
+          headerTitle: "Add Restaurant Details",
+          headerTintColor: "white",
+          headerStyle: { backgroundColor: colors.secondary },
+          headerBackTitleVisible: false,
         }}
       />
       <Stack.Screen
@@ -648,6 +773,17 @@ const AppStack = () => {
           headerShown: true,
           headerBackTitle: false,
           headerTitle: "Notifications",
+          headerTintColor: "white",
+          headerStyle: { backgroundColor: colors.secondary },
+        }}
+      />
+      <Stack.Screen
+        name="NotificationDetails"
+        component={NotificationDetails}
+        options={{
+          headerShown: true,
+          headerBackTitle: false,
+          headerTitle: "Notification Details",
           headerTintColor: "white",
           headerStyle: { backgroundColor: colors.secondary },
         }}

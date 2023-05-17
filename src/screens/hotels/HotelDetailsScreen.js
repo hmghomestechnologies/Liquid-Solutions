@@ -45,10 +45,6 @@ const HotelDetailsScreen = ({}) => {
   console.log(categories);
   return (
     <View style={{}}>
-      <SearchResultHeader
-        head={city}
-        body={`${checkInDate} -- ${checkOutDate} | ${adult} Guest`}
-      />
       <ScrollView>
         <WarningText text={"COVID19 Protocols"} />
         <View style={{ width: "100%" }}>
@@ -322,12 +318,12 @@ const HotelDetailsScreen = ({}) => {
             </View>
           </View> */}
         </View>
-        <View style={{ height: 125, width: "100%" }} />
+        <View style={{ height: 80, width: "100%" }} />
       </ScrollView>
       <View
         style={{
           position: "absolute",
-          bottom: 55,
+          bottom: 10,
           width: "100%",
           paddingHorizontal: 20,
         }}

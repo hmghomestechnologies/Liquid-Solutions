@@ -14,7 +14,15 @@ const TimeInput = ({ timeInput, setTimeInput, title, width }) => {
     setDate(currentDate);
 
     let tempDate = new Date(currentDate);
-    let fTime = tempDate.getHours() + ":" + tempDate.getMinutes();
+    let tempHours =
+      tempDate.getHours() <= 9
+        ? "0" + tempDate.getHours()
+        : tempDate.getHours();
+    let tempMins =
+      tempDate.getMinutes() <= 9
+        ? "0" + tempDate.getMinutes()
+        : tempDate.getMinutes();
+    let fTime = tempHours + ":" + tempMins;
     setTimeInput(fTime);
     // console.log(fTime);
   };

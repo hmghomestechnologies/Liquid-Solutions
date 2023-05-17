@@ -3,10 +3,16 @@ import React, { useEffect, useState } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { colors, SIZES } from "../../constants/theme";
 import { Fontisto } from "@expo/vector-icons";
+import moment from "moment";
 
 const SecondDateInput = ({ dateInput, setDateInput, title, width }) => {
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
+  // Create a new Moment.js object with the current date
+  const currentDate = moment();
+
+  // Add one day to the current date
+  const nextDate = currentDate.add(1, "day");
   const getTDate = () => {
     let tempToday = new Date();
     const today =
@@ -24,12 +30,13 @@ const SecondDateInput = ({ dateInput, setDateInput, title, width }) => {
     setDate(currentDate);
 
     let tempDate = new Date(currentDate);
-    let fDate =
-      tempDate.getFullYear() +
-      "-" +
-      (tempDate.getMonth() + 1) +
-      "-" +
-      tempDate.getDate();
+    let month =
+      tempDate.getMonth() + 1 <= 9
+        ? `0${tempDate.getMonth() + 1}`
+        : tempDate.getMonth() + 1;
+    let day =
+      tempDate.getDate() <= 9 ? `0${tempDate.getDate()}` : tempDate.getDate();
+    let fDate = tempDate.getFullYear() + "-" + month + "-" + day;
     setDateInput(fDate);
   };
 
@@ -76,7 +83,7 @@ const SecondDateInput = ({ dateInput, setDateInput, title, width }) => {
           mode={"date"}
           display="default"
           onChange={onChangeIncomeDate}
-          minimumDate={date.setDate(date.getDate() + 1)}
+          minimumDate={new Date()}
         />
       )}
     </View>

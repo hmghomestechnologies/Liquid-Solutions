@@ -59,7 +59,7 @@ const BookedDetails = () => {
     fetchData();
   }, []);
   if (car === null) return <TransparentSpinner />;
-  console.log(user);
+  console.log(data);
   return (
     <ScrollView>
       <View
@@ -166,13 +166,13 @@ const BookedDetails = () => {
             <View
               style={{
                 height: 100,
-                width: 100,
+                width: "40%",
                 borderRadius: 30,
               }}
             >
               <ImageCont source={car?.carImage} radius={30} />
             </View>
-            <View>
+            <View style={{ width: "60%" }}>
               <SubHeader text={car?.carName} color={colors.primary} />
               <Text>Model: {`${car?.carModel}`}</Text>
               <Text>Color: {car?.carColor}</Text>
@@ -242,7 +242,7 @@ const BookedDetails = () => {
             <LineDivider />
             <View style={{ paddingVertical: 10, paddingHorizontal: 20 }}>
               <SubHeader text={"Return Location"} />
-              {returnDesc !== "" ? (
+              {returnDesc !== undefined ? (
                 <MapMarker location={`${returnDesc}`} />
               ) : (
                 <Text>Both Pickup and Return Location are the same</Text>

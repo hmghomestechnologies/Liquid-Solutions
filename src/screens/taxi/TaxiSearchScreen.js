@@ -343,7 +343,7 @@ const TaxiSearchScreen = () => {
           query={{
             key: GOOGLE_MAPS_APIKEY,
             language: "en",
-            components: "country:ng",
+            
           }}
         /> */}
             {/* <GooglePlacesAutocomplete
@@ -375,7 +375,7 @@ const TaxiSearchScreen = () => {
           query={{
             key: GOOGLE_MAPS_APIKEY,
             language: "en",
-            components: "country:ng",
+            
           }}
         /> */}
             <View
@@ -497,7 +497,6 @@ const TaxiSearchScreen = () => {
                 query={{
                   key: GOOGLE_MAPS_APIKEY,
                   language: "en",
-                  components: "country:ng",
                 }}
               />
             </View>
@@ -566,7 +565,6 @@ const TaxiSearchScreen = () => {
                 query={{
                   key: GOOGLE_MAPS_APIKEY,
                   language: "en",
-                  components: "country:ng",
                 }}
               />
             </View>

@@ -19,26 +19,38 @@ import { colors, FONTS, SIZES } from "../../../constants/theme";
 import { useAuthContext } from "../../../context/AuthContext";
 import { TransparentSpinner } from "../../components";
 import { MenuItem } from "../../components/auth-components";
-import { S3Image } from "aws-amplify-react-native";
 import { useState } from "react";
 import { useEffect } from "react";
 import Spinner from "react-native-loading-spinner-overlay/lib";
+import axios from "axios";
+import baseURL from "../../../constants/baseURL";
 
-const ProfileScreen = () => {
-  const [onLoading, setOnLoading] = useState(true);
-  const { authUser, onLogout } = useAuthContext();
+const ProfileScreen = ({ navigation }) => {
+  const [notLength, setNotLength] = useState(0);
+  const { authUser, onLogout, userId, config } = useAuthContext();
+  const onMountFunction = async () => {
+    await axios
+      .get(`${baseURL}/notifications/unread-counts/${userId}`, config)
+      .then(async (res) => {
+        setNotLength(res?.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setOnLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
+    onMountFunction();
   }, []);
-  // if (onLoading) return <TransparentSpinner />;
+  useEffect(() => {
+    const focusHandler = navigation.addListener("focus", () => {
+      onMountFunction();
+    });
+    return focusHandler;
+  }, [navigation]);
   return (
-    <View>
+    <View style={{ height: "100%" }}>
       <ScrollView>
         {/* Header */}
-        <Spinner visible={onLoading} />
         <View style={{ position: "relative", alignItems: "center" }}>
           <View
             style={{
@@ -48,8 +60,8 @@ const ProfileScreen = () => {
             }}
           />
           <View>
-            <S3Image
-              imgKey={authUser?.profileImg}
+            <Image
+              source={{ uri: authUser?.profileImg }}
               style={{
                 height: 150,
                 width: 150,
@@ -168,30 +180,62 @@ const ProfileScreen = () => {
                 />
               </>
             )}
-            <MenuItem
-              Icon={Ionicons}
-              iconName={"notifications-outline"}
-              text={"Notifications"}
-              path={"Notifications"}
-            />
-            <MenuItem
-              Icon={AntDesign}
-              iconName={"dingding-o"}
-              text={"PrivacyPolicy"}
-              path={"Privacy Policy"}
-            />
-            <MenuItem
-              Icon={AntDesign}
-              iconName={"API"}
-              text={"Terms & Conditions"}
-              path={"TermsAndConditions"}
-            />
-            <MenuItem
-              Icon={Ionicons}
-              iconName={"ios-settings"}
-              text={"Settings"}
-              path={"Settings"}
-            />
+            {authUser?.userRole === "User" && (
+              <>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <MenuItem
+                    Icon={Ionicons}
+                    iconName={"notifications-outline"}
+                    text={"Notifications"}
+                    path={"Notifications"}
+                  />
+
+                  {notLength > 0 && (
+                    <Text
+                      style={{
+                        backgroundColor: colors.errorColor,
+                        borderRadius: 999,
+                        color: "white",
+                        paddingVertical: 2,
+                        paddingHorizontal: 5,
+                      }}
+                    >
+                      {notLength}
+                    </Text>
+                  )}
+                </View>
+                <MenuItem
+                  Icon={FontAwesome}
+                  iconName={"shopping-basket"}
+                  text={"Basket"}
+                  path={"BasketScreen"}
+                />
+                <MenuItem
+                  Icon={AntDesign}
+                  iconName={"dingding-o"}
+                  text={"PrivacyPolicy"}
+                  path={"PrivacyPolicy"}
+                />
+                <MenuItem
+                  Icon={AntDesign}
+                  iconName={"API"}
+                  text={"Terms & Conditions"}
+                  path={"TermsAndConditions"}
+                />
+                <MenuItem
+                  Icon={Ionicons}
+                  iconName={"ios-settings"}
+                  text={"Settings"}
+                  path={"Settings"}
+                />
+              </>
+            )}
 
             {/* Logout */}
             <TouchableOpacity

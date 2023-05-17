@@ -6,6 +6,7 @@ import HotelPaymentScreen from "./HotelPaymentScreen";
 import HotelSearchScreen from "./HotelSearchScreen";
 import SearchResult from "./SearchResult";
 import SelectRoomScreen from "./SelectRoomScreen";
+import HotelListItemDetails from "./HotelListItemDetails";
 export {
   HotelHome,
   HotelSearchScreen,
@@ -14,4 +15,5 @@ export {
   SelectRoomScreen,
   HotelBookingScreen,
   HotelPaymentScreen,
+  HotelListItemDetails,
 };

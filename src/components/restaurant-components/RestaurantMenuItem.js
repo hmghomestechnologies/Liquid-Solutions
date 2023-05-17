@@ -46,7 +46,6 @@ const RestaurantMenuItem = ({ data }) => {
       <View style={{ height: 70, width: 70 }}>
         <ImageCont source={data?.menuImg} />
       </View>
-
       <View
         style={{
           flexDirection: "row",

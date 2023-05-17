@@ -25,6 +25,7 @@ import SecondDateInput from "./SecondDateInput";
 import NewPreviousTab from "./NewPreviousTab";
 import NoResult from "./NoResult";
 import ImageCont from "./ImageCont";
+import NotificationItem from "./NotificationItem";
 
 export {
   TransparentSpinner,
@@ -54,4 +55,5 @@ export {
   NewPreviousTab,
   NoResult,
   ImageCont,
+  NotificationItem,
 };

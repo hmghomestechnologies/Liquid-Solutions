@@ -6,7 +6,13 @@ import {
   TextInput,
   ScrollView,
 } from "react-native";
-import { FontAwesome, AntDesign, Ionicons } from "@expo/vector-icons";
+import {
+  FontAwesome,
+  AntDesign,
+  Ionicons,
+  Entypo,
+  MaterialIcons,
+} from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import { colors, FONTS, SIZES, width } from "../../../../constants/theme";
 import { InputField, SecBtn } from "../../../components/Forms";
@@ -29,6 +35,7 @@ const AdminHotelDetails = () => {
   const [showForm, setShowForm] = useState(false);
   const [categoryName, setCategoryName] = useState("");
   const [price, setPrice] = useState(0);
+  const [discountedPrice, setDiscountedPrice] = useState(0);
   const [maxPersons, setMaxPersons] = useState("");
   const [description, setDescription] = useState("");
   const [onLoading, setOnLoading] = useState(false);
@@ -66,7 +73,9 @@ const AdminHotelDetails = () => {
       // Get and Arrange Data
       let postData = {
         categoryName,
+        features: "",
         price,
+        discountedPrice,
         maxPersons,
         description,
         hotel: hotel?._id,
@@ -90,6 +99,7 @@ const AdminHotelDetails = () => {
             setCategoryName("");
             setDescription("");
             setPrice(0);
+            setDiscountedPrice(0);
             setMaxPersons("");
           }
         })
@@ -105,6 +115,7 @@ const AdminHotelDetails = () => {
         });
     }
   };
+  console.log(categories);
   return (
     <View style={{ height: "100%", width: "100%" }}>
       <Spinner visible={onLoading} />
@@ -224,7 +235,6 @@ const AdminHotelDetails = () => {
         >
           <View
             style={{
-              height: 400,
               width: "80%",
               backgroundColor: "white",
               borderRadius: 15,
@@ -233,6 +243,7 @@ const AdminHotelDetails = () => {
               justifyContent: "center",
               alignItems: "center",
               position: "relative",
+              paddingVertical: 15,
             }}
           >
             {/* Form */}
@@ -240,30 +251,38 @@ const AdminHotelDetails = () => {
               <InputField
                 value={categoryName}
                 placeholder="Category Name"
-                Icon={Ionicons}
-                iconName="color-filter-outline"
+                Icon={MaterialIcons}
+                iconName="category"
                 setInput={setCategoryName}
               />
               <InputField
                 value={maxPersons}
                 placeholder="Max Persons Per Room"
-                Icon={Ionicons}
-                iconName="color-filter-outline"
+                Icon={FontAwesome}
+                iconName="users"
                 setInput={setMaxPersons}
+              />
+              <InputField
+                value={discountedPrice}
+                placeholder="Discounted Price"
+                Icon={FontAwesome}
+                iconName="money"
+                setInput={setDiscountedPrice}
+                type="numeric"
               />
               <InputField
                 value={price}
                 placeholder="Price"
-                Icon={Ionicons}
-                iconName="color-filter-outline"
+                Icon={FontAwesome}
+                iconName="money"
                 setInput={setPrice}
                 type="numeric"
               />
               <InputField
                 value={description}
                 placeholder="Category Description"
-                Icon={Ionicons}
-                iconName="color-filter-outline"
+                Icon={Entypo}
+                iconName="info-with-circle"
                 setInput={setDescription}
               />
 

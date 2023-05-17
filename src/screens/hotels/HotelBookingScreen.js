@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
+// import { v4 as uuidv4 } from "uuid";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { FontAwesome } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
@@ -22,7 +22,7 @@ import {
   TransparentSpinner,
 } from "../../components";
 import { colors, FONTS, SHADOWS, SIZES } from "../../../constants/theme";
-import { getWordDate } from "../../../constants/functions";
+import { generateUniqueId, getWordDate } from "../../../constants/functions";
 import {
   LoadingBtn,
   OutlinedSecBtn,
@@ -48,21 +48,24 @@ const HotelBookingScreen = () => {
   const { searchedData, category, calDays } = route?.params;
   const getHotel = async () => {
     if (category || hotels) {
-      const tempHotels = await hotels.filter((i) => i._id === category.hotel);
+      const tempHotels = await hotels?.filter((i) => i._id === category.hotel);
       await setHotel(tempHotels[0]);
     }
   };
   useEffect(() => {
     getHotel();
   }, []);
-  const totalPrice = category?.price * calDays;
+  const totalPrice =
+    category?.discountedPrice === 0
+      ? category?.price * calDays
+      : category?.discountedPrice * calDays;
   let reservationData = {
     userId: authUser?._id,
     userEmail: authUser?.email,
     hotelId: category?.hotel,
     hotelAdminId: hotel?.user,
     categoryId: category?._id,
-    transId: uuidv4(),
+    transId: generateUniqueId(),
     nights: calDays,
     amount: totalPrice,
     checkInDate: searchedData?.checkInDate,
@@ -88,16 +91,19 @@ const HotelBookingScreen = () => {
   };
   const onPayWithWallet = async () => {
     setLoading(true);
-    const transId = uuidv4();
-    const transRef = "TRX" + uuidv4() + "REF";
+    const transId = generateUniqueId();
+    const transRef = generateUniqueId() + "-REF";
     let payData = {
       userId: authUser?._id,
-      desc: "Payment for Bookin a Hotel",
+      desc: `Payment for your Booking at ${hotel?.hotelName} hotel`,
       transactionId: transId,
       transactionRef: transRef,
       amount: totalPrice,
       transType: "DEBIT",
       paymentMode: "WALLET",
+      notDesc: `Your wallet have been Debit with sum of ${totalPrice} with transactional ID ${transId} and reference ${transRef}. Payment for your Booking at ${hotel?.hotelName} hotel`,
+      notTitle: "Alert!!!, Wallet Debited",
+      notType: "Wallet",
     };
     if (totalPrice > walletBal) {
       Toast.show({
@@ -170,7 +176,6 @@ const HotelBookingScreen = () => {
       text2: "Please Other Payment Method",
     });
   };
-  console.log(reservationData);
   if (loading || !hotel) return <TransparentSpinner />;
   return (
     <View style={{ width: "100%", height: "100%" }}>
@@ -188,9 +193,9 @@ const HotelBookingScreen = () => {
         showsVerticalScrollIndicator={false}
       >
         <View style={{}}>
-          <View style={{ height: 180 }}>
+          {/* <View style={{ height: 180 }}>
             <ImageCont source={hotel?.fImg} />
-          </View>
+          </View> */}
           <View
             style={{
               width: "100%",
@@ -304,19 +309,23 @@ const HotelBookingScreen = () => {
                 <FormatedNumber
                   value={category?.price * calDays}
                   color="gray"
+                  isStrike={category?.discountedPrice === 0 ? false : true}
                 />
               </View>
               <View style={styles.cont}>
                 <Text style={styles.title}>Discounted Price</Text>
-                <FormatedNumber value={0} color="gray" />
+                <FormatedNumber
+                  value={category?.discountedPrice}
+                  color="gray"
+                />
               </View>
-              <View style={styles.cont}>
+              {/* <View style={styles.cont}>
                 <Text style={styles.title}>Total Payable</Text>
                 <FormatedNumber
                   value={category?.price * calDays}
                   color="gray"
                 />
-              </View>
+              </View> */}
             </View>
             <LineDivider />
             <View style={{ marginVertical: 0 }}>
@@ -332,7 +341,11 @@ const HotelBookingScreen = () => {
                 </Text>
                 <View>
                   <FormatedNumber
-                    value={category?.price * calDays}
+                    value={
+                      category?.discountedPrice === 0
+                        ? category?.price * calDays
+                        : category?.discountedPrice * calDays
+                    }
                     color={colors.primary}
                     size={SIZES.extraLarge}
                   />
@@ -384,7 +397,7 @@ const HotelBookingScreen = () => {
               position: "relative",
             }}
           >
-            <View style={{ position: "absolute", right: 20, top: 20 }}>
+            {/* <View style={{ position: "absolute", right: 20, top: 20 }}>
               <View
                 style={{
                   flexDirection: "column",
@@ -399,7 +412,7 @@ const HotelBookingScreen = () => {
                   size={SIZES.medium}
                 />
               </View>
-            </View>
+            </View> */}
             <View style={{}}>
               <View
                 style={{

@@ -7,8 +7,9 @@ import { useRoute } from "@react-navigation/native";
 const SelectRoomScreen = () => {
   const route = useRoute();
   const { searchedData, categories, calDays } = route?.params;
+  console.log(calDays);
   return (
-    <View style={{ backgroundColor: "white" }}>
+    <View style={{ backgroundColor: "white", paddingTop: 10 }}>
       <SearchResultHeader
         head="Select Rooms"
         body={`${searchedData?.checkInDate} |-| ${searchedData?.checkOutDate} `}

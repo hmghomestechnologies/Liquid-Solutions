@@ -56,11 +56,11 @@ const SearchResult = () => {
   if (cityHotels === null) return <TransparentSpinner />;
   console.log(cityHotels);
   return (
-    <View style={{ marginTop: 5 }}>
+    <View style={{}}>
       <View
         style={{
           position: "absolute",
-          top: 17,
+          top: 15,
           width: "100%",
           backgroundColor: "white",
           // paddingTop: 15,
@@ -147,7 +147,7 @@ const SearchResult = () => {
                   fontWeight: "700",
                 }}
               >
-                Results(S)
+                Results ({cityHotels?.length})
               </Text>
             }
             renderItem={({ item }) => (

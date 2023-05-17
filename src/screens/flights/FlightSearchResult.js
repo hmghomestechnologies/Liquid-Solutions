@@ -14,92 +14,15 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { colors, FONTS, SHADOWS } from "../../../constants/theme";
 import { FontAwesome } from "@expo/vector-icons";
 import Footer from "../../components/Layouts/Footer";
+import { useRoute } from "@react-navigation/native";
 
 const FlightSearchResult = () => {
   const [recommended, setRecommended] = useState(true);
   const [best, setBest] = useState(false);
   const [cheapest, setCheapest] = useState(false);
   const [airlines, setAirlines] = useState(false);
-
-  const data = [
-    {
-      id: "hhdhhfhiudh",
-      name: "Quatar Airways",
-      img: "https://stockphoto.com/samples/OTg1NjY0NTMwMDAxMWY1YmNmYjBlZA==/MjIxMWY1YmNmYjBlZA==/red-bird-icon.jpg",
-      category: "Best",
-      amount: 200340,
-      numbers: 3,
-      isFavourite: true,
-      depLocation: "ABV",
-      depStartTime: "6:30am",
-      depStopTime: "7:30am",
-      depDuration: "1hr 15mins",
-      depStops: 0,
-      desLocation: "LOS",
-      desStartTime: "8:0pm",
-      desStopTime: "10:30pm",
-      desDuration: "2hr 30mins",
-      desStops: 0,
-    },
-    {
-      id: "hhdhhfhiudhhdh832",
-      name: "Quatar Airways",
-      img: "https://stockphoto.com/samples/OTg1NjY0NTMwMDAxMWY1YmNmYjBlZA==/MjIxMWY1YmNmYjBlZA==/red-bird-icon.jpg",
-      category: "Best",
-      amount: 200340,
-      numbers: 3,
-      isFavourite: true,
-      depLocation: "ABV",
-      depStartTime: "6:30am",
-      depStopTime: "7:30am",
-      depDuration: "1hr 15mins",
-      depStops: 0,
-      desLocation: "LOS",
-      desStartTime: "8:0pm",
-      desStopTime: "10:30pm",
-      desDuration: "2hr 30mins",
-      desStops: 0,
-    },
-    {
-      id: "hhdhhf76fhhiudh",
-      name: "Quatar Airways",
-      img: "https://stockphoto.com/samples/OTg1NjY0NTMwMDAxMWY1YmNmYjBlZA==/MjIxMWY1YmNmYjBlZA==/red-bird-icon.jpg",
-      category: "Best",
-      amount: 200340,
-      numbers: 3,
-      isFavourite: true,
-      depLocation: "ABV",
-      depStartTime: "6:30am",
-      depStopTime: "7:30am",
-      depDuration: "1hr 15mins",
-      depStops: 0,
-      desLocation: "LOS",
-      desStartTime: "8:0pm",
-      desStopTime: "10:30pm",
-      desDuration: "2hr 30mins",
-      desStops: 0,
-    },
-    {
-      id: "hhdhhfh6345iudh",
-      name: "Quatar Airways",
-      img: "https://stockphoto.com/samples/OTg1NjY0NTMwMDAxMWY1YmNmYjBlZA==/MjIxMWY1YmNmYjBlZA==/red-bird-icon.jpg",
-      category: "Best",
-      amount: 200340,
-      numbers: 3,
-      isFavourite: true,
-      depLocation: "ABV",
-      depStartTime: "6:30am",
-      depStopTime: "7:30am",
-      depDuration: "1hr 15mins",
-      depStops: 0,
-      desLocation: "LOS",
-      desStartTime: "8:0pm",
-      desStopTime: "10:30pm",
-      desDuration: "2hr 30mins",
-      desStops: 0,
-    },
-  ];
-
+  const route = useRoute();
+  const { searchedData, flightDetails } = route?.params;
   const onRecommended = () => {
     setRecommended(true);
     setBest(false);
@@ -126,9 +49,7 @@ const FlightSearchResult = () => {
   };
 
   return (
-    <View
-    // style={{ marginBottom: 20 }}
-    >
+    <View style={{ height: "100%" }}>
       <View
         style={{
           position: "absolute",
@@ -142,12 +63,15 @@ const FlightSearchResult = () => {
       >
         <View style={{ flexDirection: "row" }}>
           <FlightDetailsHeader
-            location={"ABV-LOS"}
-            dates="Jun 6-9"
-            passenger="1"
+            location={`Flight details from ${searchedData?.departureAirport?.city} to ${searchedData?.destinationAirport?.city}`}
+            dates={`${searchedData?.departureDate} ${
+              searchedData?.returnDate !== null
+                ? " -- " + searchedData?.returnDate
+                : ""
+            }`}
           />
         </View>
-        <View
+        {/* <View
           style={{
             width: "100%",
             paddingHorizontal: 20,
@@ -201,7 +125,7 @@ const FlightSearchResult = () => {
             <Text style={{ fontFamily: FONTS.semiBold }}>NGN</Text>
           </View>
 
-          {/* <FilterTab
+          <FilterTab
             name={"Recommend"}
             activeTab={recommended}
             onPress={onRecommended}
@@ -216,15 +140,15 @@ const FlightSearchResult = () => {
             name={"airlines"}
             activeTab={airlines}
             onPress={onAirlines}
-          /> */}
-        </View>
+          />
+        </View> */}
       </View>
-      <View style={{ backgroundColor: colors.bgGray }}>
+      <View style={{ backgroundColor: colors.bgGray, height: "100%" }}>
         <FlatList
-          data={data}
+          data={flightDetails}
           keyExtractor={(item) => item.id}
           style={{
-            marginTop: 140,
+            marginTop: 80,
             marginHorizontal: 20,
             paddingTop: 20,
           }}
@@ -236,10 +160,16 @@ const FlightSearchResult = () => {
                 fontWeight: "700",
               }}
             >
-              24 Results(S)
+              {flightDetails?.length} Results(s)
             </Text>
           }
-          renderItem={({ item }) => <FlightResultItem data={item} />}
+          renderItem={({ item }) => (
+            <FlightResultItem
+              data={item}
+              returnDate={searchedData?.returnDate}
+              searchedData={searchedData}
+            />
+          )}
           showsVerticalScrollIndicator={false}
           ListFooterComponent={<View style={{ height: 90, width: "100%" }} />}
         />

@@ -10,16 +10,16 @@ import { TransparentSpinner } from "../../components";
 import axios from "axios";
 import baseURL from "../../../constants/baseURL";
 import { useRestaurantContext } from "../../../context/RestaurantContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const BasketPaymentScreen = () => {
   const [btnLoading, setBtnLoading] = useState(false);
   const route = useRoute();
   const navigation = useNavigation();
   const { authUser } = useAuthContext();
-  const { setBasket } = useRestaurantContext();
 
-  const { newOrder, currentBasket, deliveryAddress, restaurantName } =
-    route?.params;
+  const { newOrder, items, deliveryAddress, restaurantName } = route?.params;
+  const { baskets } = useRestaurantContext();
 
   const config = {
     headers: {
@@ -34,7 +34,7 @@ const BasketPaymentScreen = () => {
       transactionId: transRef?.transaction,
       transactionRef: transRef?.reference,
       amount: newOrder?.total.toFixed(0),
-      orderedItems: currentBasket,
+      orderedItems: items,
       status: "NEW",
       isPaid: true,
       deliveryAddress: deliveryAddress,
@@ -42,21 +42,57 @@ const BasketPaymentScreen = () => {
     };
     await axios
       .post(`${baseURL}/restaurant/order`, orderData, config)
-      .then((res) => {
+      .then(async (res) => {
         if (res.status == 201) {
-          Toast.show({
-            topOffset: 60,
-            type: "success",
-            text1: "Your Order was successful!!!",
-            text2:
-              "Our Restaurant will Confirm and Process Your Order, Please await our Confirmation mail",
-          });
-          setBasket([]);
-          navigation.reset({
-            index: 0,
-            routes: [{ name: "ManageBooking" }],
-          });
-          setBtnLoading(false);
+          try {
+            const updatedBaskets = baskets.filter(
+              (basket) => basket.restaurantId !== newOrder?.restaurantId
+            );
+
+            await AsyncStorage.removeItem(`basket_${newOrder?.restaurantId}`);
+
+            const updatedBasketPairs = updatedBaskets.map((basket) => [
+              `basket_${basket.restaurantId}`,
+              JSON.stringify(basket.items),
+            ]);
+
+            const keysToRemove = [`basket_${newOrder?.restaurantId}`];
+            const keysToSet = updatedBasketPairs.map(([key, value]) => [
+              key,
+              value,
+            ]);
+
+            await AsyncStorage.multiRemove(keysToRemove);
+            await AsyncStorage.multiSet(keysToSet);
+            await AsyncStorage.multiSet(updatedBasketPairs);
+            Toast.show({
+              topOffset: 60,
+              type: "success",
+              text1: "Your Order was successful!!!",
+              text2:
+                "Our Restaurant will Confirm and Process Your Order, Please await our Confirmation mail",
+            });
+            navigation.reset({
+              index: 0,
+              routes: [{ name: "ManageBooking" }],
+            });
+            setBtnLoading(false);
+          } catch (error) {
+            navigation.navigate("BasketScreen", {
+              restaurantId: newOrder?.restaurantId,
+              userId: newOrder?.userId,
+              restaurantName,
+            });
+            console.log(error);
+            Toast.show({
+              topOffset: 60,
+              type: "error",
+              text1: "Something Went wrong",
+              text2: "Please Try Again",
+            });
+            setBtnLoading(false);
+            console.log("Error deleting basket:", error);
+          }
         }
       })
       .catch((error) => {

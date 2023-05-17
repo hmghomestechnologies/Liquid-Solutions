@@ -33,6 +33,9 @@ const UseCardScreen = () => {
       amount: amount,
       transType: "CREDIT",
       paymentMode: "PAYSTACK",
+      notDesc: `Your wallet have been credited with sum of ${amount} with transactional ID ${transRef?.transaction} and reference ${transRef?.reference}. Your wallet was funded using Paystack Mode of Payment`,
+      notTitle: "Alert!!!, Wallet Credited",
+      notType: "Wallet",
     };
     await axios
       .post(`${baseURL}/wallet`, payData, config)
@@ -61,7 +64,7 @@ const UseCardScreen = () => {
         Toast.show({
           topOffset: 60,
           type: "error",
-          text1: "Something Went wrong",
+          text1: `${error.response.data.message}`,
           text2: "Please Try Again",
         });
         setLoading(false);

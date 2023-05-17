@@ -9,6 +9,7 @@ import {
 import React, { useEffect, useState } from "react";
 import {
   DateInput,
+  Header,
   ListItem,
   SecondDateInput,
   SemiRounded,
@@ -31,8 +32,12 @@ import { SearchedHotel } from "../../components/hotel-components";
 import Toast from "react-native-toast-message";
 import { useHotelContext } from "../../../context/HotelContext";
 import { cities } from "../../../constants/cities";
+import { useAuthContext } from "../../../context/AuthContext";
+import baseURL from "../../../constants/baseURL";
+import axios from "axios";
+import moment from "moment";
 
-const HotelSearchScreen = () => {
+const HotelSearchScreen = ({ navigation }) => {
   const [filteredHotels, setfilteredHotels] = useState([]);
   const [filteredCities, setFilteredCities] = useState([]);
   const [searchedHotels, setSearchedHotels] = useState([]);
@@ -47,15 +52,35 @@ const HotelSearchScreen = () => {
   const [showContainer, setShowContainer] = useState(false);
   const [showLocationCont, setShowLocationCont] = useState(false);
   const [cityLoading, setCityLoading] = useState(false);
-
-  const navigation = useNavigation();
+  const [notLength, setNotLength] = useState(0);
   const { hotels } = useHotelContext();
+
+  const { userId, config } = useAuthContext();
   const getHotels = async () => {
     await setfilteredHotels(hotels);
   };
+  const onMountFunction = async () => {
+    await axios
+      .get(`${baseURL}/notifications/unread-counts/${userId}`, config)
+      .then(async (res) => {
+        setNotLength(res?.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   useEffect(() => {
     getHotels();
+    onMountFunction();
   }, []);
+  useEffect(() => {
+    const focusHandler = navigation.addListener("focus", () => {
+      getHotels();
+
+      onMountFunction();
+    });
+    return focusHandler;
+  }, [navigation]);
   const searchHotel = async (text) => {
     // if (text.length === 0) {
     //   setCityLoading(false);
@@ -77,6 +102,8 @@ const HotelSearchScreen = () => {
     setFocus(false);
   };
   const onFindHotel = async () => {
+    const start = moment(checkInDate, "YYYY-MM-DD");
+    const end = moment(checkOutDate, "YYYY-MM-DD");
     if (city === "") {
       Toast.show({
         topOffset: 60,
@@ -100,6 +127,14 @@ const HotelSearchScreen = () => {
           text2: "Please Choose your Check Out Date",
         });
       }
+    } else if (end.isSameOrBefore(start)) {
+      // End date is less than or equal to start date
+      Toast.show({
+        topOffset: 60,
+        type: "error",
+        text1: "Please Choose Checkout Date Again",
+        text2: "Checkin and Checkout Date Must not be the Same",
+      });
     } else {
       // const tempHotels = await hotels.filter((i) => i.town === city);
       // await setSearchedHotels(tempHotels);
@@ -128,8 +163,14 @@ const HotelSearchScreen = () => {
   return (
     <View style={{ height: "100%" }}>
       <ScrollView style={{ backgroundColor: colors.bgGray, marginBottom: 20 }}>
-        <SemiRounded>
-          <View style={{}}>
+        <Header
+          placeholder={"Search For Some where to stay"}
+          active={"hotel"}
+          searchPath={"HotelSearchScreen"}
+          notLength={notLength}
+        />
+        {/* <SemiRounded> */}
+        {/* <View style={{}}>
             <View
               style={{
                 flexDirection: "row",
@@ -143,15 +184,15 @@ const HotelSearchScreen = () => {
                   uri: "https://stockphoto.com/samples/ODA2NjU1MDAzMDAxMWY1YmNmYjBlZA==/MjIxMWY1YmNmYjBlZA==/portrait-of-smart-friendly-smiling-kazakh-man-in-glasses-dressed-in-business-suit-in-office-on-white-background-asian-handsome-successful-businessman.jpg",
                 }}
                 style={{ height: 40, width: 40, borderRadius: 100 }}
-              />
-              {/* <View>
+              /> */}
+        {/* <View>
                 <Ionicons
                   name="notifications-outline"
                   size={35}
                   color="white"
                 />
               </View> */}
-            </View>
+        {/* </View>
             <Text
               style={{
                 fontSize: SIZES.extraLarge,
@@ -166,7 +207,7 @@ const HotelSearchScreen = () => {
               Let's Book your Hotel!
             </Text>
           </View>
-        </SemiRounded>
+        </SemiRounded> */}
         <View
           style={{
             marginVertical: 25,
@@ -368,14 +409,14 @@ const HotelSearchScreen = () => {
                 width: "100%",
                 flexDirection: "row",
                 flexWrap: "wrap",
-                justifyContent: "space-around",
-                alignItems: "center",
+                // justifyContent: "s",
+                // alignItems: "flex-start",
                 marginBottom: 30,
               }}
             >
               {hotels &&
                 hotels
-                  .slice(0, 4)
+                  .slice(0, 10)
                   .map((item, index) => <ListItem key={index} data={item} />)}
             </View>
           </View>

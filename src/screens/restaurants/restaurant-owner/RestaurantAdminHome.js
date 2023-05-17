@@ -14,8 +14,8 @@ import {
   UserOrdersContainer,
   UserReservationsContainer,
 } from "../../../components/restaurant-components/res-admin";
-import AddRestaurantDetails from "./AddRestaurantDetails";
-const RestaurantAdminHome = () => {
+import { useNavigation } from "@react-navigation/native";
+const RestaurantAdminHome = ({ navigation }) => {
   const [onReservations, setOnReservations] = useState(true);
   const [onOrders, setOnOrders] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,12 +30,15 @@ const RestaurantAdminHome = () => {
     resOrders,
     setResOrders,
   } = useRestaurantContext();
-  useEffect(() => {
+  const onMountCheck = () => {
     axios
       .get(`${baseURL}/restaurant/admin/${userId}`, config)
       .then(async (res) => {
-        setCurrentRestaurant(res.data);
-        if (res.status === 200) {
+        if (res.data === null) {
+          setIsLoading(false);
+          navigation.navigate("AddRestaurantDetails");
+        } else {
+          setCurrentRestaurant(res.data);
           await axios
             .get(
               `${baseURL}/restaurant/reservations/restaurant/${res?.data?._id}`,
@@ -47,6 +50,7 @@ const RestaurantAdminHome = () => {
             })
             .catch((err) => {
               console.log(err);
+              setIsLoading(false);
             });
           await axios
             .get(`${baseURL}/restaurant/admin/orders/${res?.data?._id}`, config)
@@ -56,56 +60,54 @@ const RestaurantAdminHome = () => {
             })
             .catch((err) => {
               console.log(err);
+              setIsLoading(false);
             });
         }
         setIsLoading(false);
       })
       .catch((err) => {
         console.log(err);
+        setIsLoading(false);
       });
-    return () => {
-      setResReservations([]);
-      setResOrders([]);
-      setCurrentRestaurant({});
-      setIsLoading(false);
-    };
+  };
+  useEffect(() => {
+    onMountCheck();
   }, []);
+  useEffect(() => {
+    const focusHandler = navigation.addListener("focus", () => {
+      onMountCheck();
+    });
+    return focusHandler;
+  }, [navigation]);
   return (
     <>
-      {currentRestaurant ? (
-        <View style={{ height: "100%", width: "100%" }}>
-          <Spinner visible={isLoading} />
-          <View>
-            <ReservationOrderTab
-              onReservations={onReservations}
-              setOnReservations={setOnReservations}
-              onOrders={onOrders}
-              setOnOrders={setOnOrders}
-              newTabText="New Reservations"
-              prevTabText="New Orders"
-            />
-          </View>
-          {onReservations ? (
-            <UserReservationsContainer
-              data={resReservations}
-              isLoading={isLoading}
-              setIsLoading={setIsLoading}
-            />
-          ) : (
-            <UserOrdersContainer
-              data={resOrders}
-              isLoading={isLoading}
-              setIsLoading={setIsLoading}
-            />
-          )}
-          <Footer
-            active={"restaurantHome"}
-            searchPath={"RestaurantAdminHome"}
+      <View style={{ height: "100%", width: "100%" }}>
+        <Spinner visible={isLoading} />
+        <View>
+          <ReservationOrderTab
+            onReservations={onReservations}
+            setOnReservations={setOnReservations}
+            onOrders={onOrders}
+            setOnOrders={setOnOrders}
+            newTabText="New Reservations"
+            prevTabText="New Orders"
           />
         </View>
-      ) : (
-        <AddRestaurantDetails />
-      )}
+        {onReservations ? (
+          <UserReservationsContainer
+            data={resReservations}
+            isLoading={isLoading}
+            setIsLoading={setIsLoading}
+          />
+        ) : (
+          <UserOrdersContainer
+            data={resOrders}
+            isLoading={isLoading}
+            setIsLoading={setIsLoading}
+          />
+        )}
+        <Footer active={"restaurantHome"} searchPath={"RestaurantAdminHome"} />
+      </View>
     </>
   );
 };

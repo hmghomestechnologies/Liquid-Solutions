@@ -51,7 +51,9 @@ const OnBoardingScreen = () => {
         <View style={{ width: "70%" }}>
           <SecBtn
             text={"Get Started"}
-            onBtnPress={() => navigation.navigate("UserSelectorScreen")}
+            onBtnPress={() =>
+              navigation.navigate("RegisterScreen", { userType: "User" })
+            }
           />
           <Text
             style={{

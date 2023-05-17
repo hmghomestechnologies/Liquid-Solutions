@@ -8,7 +8,16 @@ import { MainHeading } from "../components/Typography";
 const WelcomeScreen = () => {
   const navigation = useNavigation();
   return (
-    <View style={{ backgroundColor: "#fff", height: "100%" }}>
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "space-between",
+        backgroundColor: "#fff",
+        height: "100%",
+        alignItems: "center",
+        paddingBottom: 200,
+      }}
+    >
       <Image
         source={image1}
         style={{
@@ -32,7 +41,7 @@ const WelcomeScreen = () => {
           />
         </View>
         <View style={{ width: "100%" }}>
-          <TouchableOpacity style={styles.socialbutton}>
+          {/* <TouchableOpacity style={styles.socialbutton}>
             <Entypo name="facebook" size={24} color={colors.secondary} />
             <Text style={styles.socialText}>Continue with Facebook</Text>
           </TouchableOpacity>
@@ -40,15 +49,21 @@ const WelcomeScreen = () => {
             <AntDesign name="apple1" size={24} color="black" />
             <Text style={styles.socialText}>Continue with Apple</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.socialbutton}>
-            <AntDesign name="googleplus" size={24} color={"red"} />
-            <Text style={styles.socialText}>Continue with Google</Text>
-          </TouchableOpacity>
+          */}
           <View>
             <SecBtn
               text={"Sign Up with Email"}
-              onBtnPress={() => navigation.navigate("UserSelectorScreen")}
+              onBtnPress={() =>
+                navigation.navigate("RegisterScreen", { userType: "User" })
+              }
             />
+            <TouchableOpacity
+              style={styles.socialbutton}
+              onPress={() => navigation.navigate("LoginScreen")}
+            >
+              <AntDesign name="login" size={24} color={colors.secondary} />
+              <Text style={styles.socialText}>Login</Text>
+            </TouchableOpacity>
           </View>
           <View>
             <Text

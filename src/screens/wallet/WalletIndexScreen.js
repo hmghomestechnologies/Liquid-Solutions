@@ -26,7 +26,6 @@ const WalletIndexScreen = () => {
   const [showPaymentCont, setShowPaymentCont] = useState(false);
   const [amount, setAmount] = useState(0);
   const { walletBal, transactions } = useWalletContext();
-
   const navigation = useNavigation();
   const onPayWithCard = () => {
     setLoading(true);
@@ -121,7 +120,11 @@ const WalletIndexScreen = () => {
           >
             Wallet Balance
           </Text>
-          <FormatedNumber value={walletBal} color="white" size={40} />
+          <FormatedNumber
+            value={walletBal.toFixed(2)}
+            color="white"
+            size={40}
+          />
         </View>
       </View>
       {transactions.length > 0 ? (
@@ -158,7 +161,7 @@ const WalletIndexScreen = () => {
         </View>
       )}
 
-      <Footer active={"WalletIndexScreen"} />
+      <Footer active={"wallet"} />
       {/* Payment Container */}
       {showPaymentCont && (
         <View
@@ -244,7 +247,7 @@ const WalletIndexScreen = () => {
                   fontSize: SIZES.medium,
                   paddingVertical: 5,
                 }}
-                keyboardType="number-pad"
+                keyboardType="numeric"
                 placeholder="Amount"
                 onChangeText={(text) => setAmount(text)}
               />

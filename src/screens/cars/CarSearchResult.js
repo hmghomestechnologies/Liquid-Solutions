@@ -52,7 +52,7 @@ const CarSearchResult = () => {
           top: 17,
           width: "100%",
           backgroundColor: "white",
-          paddingTop: 5,
+          // paddingTop: 5,
           // paddingHorizontal: 20,
           zIndex: 10,
         }}

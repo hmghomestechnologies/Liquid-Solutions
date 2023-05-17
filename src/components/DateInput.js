@@ -24,12 +24,13 @@ const DateInput = ({ dateInput, setDateInput, title, width }) => {
     setDate(currentDate);
 
     let tempDate = new Date(currentDate);
-    let fDate =
-      tempDate.getFullYear() +
-      "-" +
-      (tempDate.getMonth() + 1) +
-      "-" +
-      tempDate.getDate();
+    let month =
+      tempDate.getMonth() + 1 <= 9
+        ? `0${tempDate.getMonth() + 1}`
+        : tempDate.getMonth() + 1;
+    let day =
+      tempDate.getDate() <= 9 ? `0${tempDate.getDate()}` : tempDate.getDate();
+    let fDate = tempDate.getFullYear() + "-" + month + "-" + day;
     setDateInput(fDate);
   };
   return (

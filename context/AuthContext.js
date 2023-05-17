@@ -17,12 +17,12 @@ const AuthContextProvider = ({ children }) => {
     try {
       const jsonValue = JSON.stringify(value);
       await AsyncStorage.setItem("user", jsonValue);
-      if (value.userRole === "resAdmin") {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "Home" }],
-        });
-      }
+      // if (value.userRole === "resAdmin") {
+      //   navigation.reset({
+      //     index: 0,
+      //     routes: [{ name: "Home" }],
+      //   });
+      // }
     } catch (e) {
       // saving error
       Toast.show({
@@ -128,6 +128,7 @@ const AuthContextProvider = ({ children }) => {
         setSplashLoading,
         config,
         userId,
+        isLoggedIn,
       }}
     >
       {children}

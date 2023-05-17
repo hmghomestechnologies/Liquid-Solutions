@@ -118,9 +118,10 @@ const LoginScreen = () => {
                 color: colors.primary,
                 textDecorationLine: "underline",
               }}
-              onPress={() => navigation.navigate("UserSelectorScreen")}
+              onPress={() =>
+                navigation.navigate("RegisterScreen", { userType: "User" })
+              }
             >
-              {" "}
               Sign Up
             </Text>
           </Text>

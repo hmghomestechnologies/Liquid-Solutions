@@ -54,7 +54,7 @@ const OTPScreen = () => {
           Icon={Octicons}
           iconName="number"
           setInput={setOtp}
-          type={"number-pad"}
+          type={"numeric"}
         />
         <View style={{ marginTop: 5 }}>
           <SecBtn

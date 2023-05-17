@@ -47,6 +47,7 @@ const AddMenuItemScreen = () => {
   const { params } = route?.params;
   const { userId, config } = useAuthContext();
   const { currentRestaurant } = useRestaurantContext();
+  console.log(currentRestaurant);
   const pickMenuImg = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -54,29 +55,49 @@ const AddMenuItemScreen = () => {
       quality: 0.7,
       allowsEditing: true,
     });
-    if (!result.cancelled) {
-      setMenuImg(result.uri);
-    } else {
-      Toast.show({
-        topOffset: 60,
-        type: "error",
-        text1: "Something Went wrong, While uploading Dish Image",
-        text2: "Please Try Again",
-      });
+    if (!result.canceled) {
+      setOnLoading(true);
+      const source = {
+        uri: result.assets[0].uri,
+        type: "image/jpeg",
+        name: "Restaurant.jpg",
+      };
+      const data = new FormData();
+      data.append("file", source);
+      data.append("upload_preset", "triluxyapp");
+      data.append("cloud_name", "dc5ulgooc");
+      fetch("https://api.cloudinary.com/v1_1/dc5ulgooc/image/upload", {
+        method: "POST",
+        body: data,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "multipart/form-data",
+        },
+      })
+        .then((res) => res.json())
+        .then(async (data) => {
+          Toast.show({
+            topOffset: 60,
+            type: "success",
+            text1: "Image Uploaded Successfully",
+            text2: "You can now Proceed",
+          });
+          setMenuImg(data?.secure_url);
+          setOnLoading(false);
+        })
+        .catch((err) => {
+          setOnLoading(false);
+          Toast.show({
+            topOffset: 60,
+            type: "error",
+            text1: "Error Occured, Couldn't Image",
+            text2: "Please Try Again",
+          });
+          console.log(err);
+        });
     }
   };
   const onSubmitForm = async () => {
-    setOnLoading(true);
-    // Validation
-    if (menuName === "" || menuImg === "" || menuType === "" || price === "") {
-      Toast.show({
-        topOffset: 60,
-        type: "error",
-        text1: "Empty Fields",
-        text2: "Please Filled all Fields",
-      });
-      setOnLoading(false);
-    }
     // Get and Arrange Data
     let menuDetails = {
       menuName,
@@ -85,57 +106,63 @@ const AddMenuItemScreen = () => {
       description,
       discountedPrice,
       price,
+      location: currentRestaurant?.town,
       restaurantId: currentRestaurant?._id,
     };
-    // Upload Images
-    menuDetails.menuImg = await uploadMenuImage(menuImg);
-    // Save to db
-    await axios
-      .post(`${baseURL}/restaurant/add-menu`, menuDetails, config)
-      .then((res) => {
-        if (res.status == 201) {
-          Toast.show({
-            topOffset: 60,
-            type: "success",
-            text1: "Menu Details Added Succesfully",
-            text2: "You can now Manage Menu Item",
-          });
+    console.log(menuDetails);
+    setOnLoading(true);
+    // Validation
+    if (menuName === "" || menuImg === "" || price === "") {
+      Toast.show({
+        topOffset: 60,
+        type: "error",
+        text1: "Empty Fields",
+        text2: "Please Filled all Fields",
+      });
+      setOnLoading(false);
+    } else {
+      // Save to db
+      await axios
+        .post(`${baseURL}/restaurant/add-menu`, menuDetails, config)
+        .then((res) => {
+          if (res.status == 201) {
+            Toast.show({
+              topOffset: 60,
+              type: "success",
+              text1: "Menu Details Added Succesfully",
+              text2: "You can now Manage Menu Item",
+            });
+            setOnLoading(false);
+            navigation.navigate("ProfileScreen");
+          } else {
+            Toast.show({
+              topOffset: 60,
+              type: "error",
+              text1: "Something Went wrong",
+              text2: "Please Try Again",
+            });
+            setOnLoading(false);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
           setOnLoading(false);
-          navigation.navigate("ProfileScreen");
-        } else {
-          Toast.show({
-            topOffset: 60,
-            type: "error",
-            text1: "Something Went wrong",
-            text2: "Please Try Again",
-          });
-          setOnLoading(false);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-        Toast.show({
-          topOffset: 60,
-          type: "error",
-          text1: "Something Went wrong",
-          text2: "Please Try Again",
+          if (error?.response?.data?.message === undefined) {
+            Toast.show({
+              topOffset: 60,
+              type: "error",
+              text1: `${error?.message}`,
+              text2: "Please Try Again",
+            });
+          } else {
+            Toast.show({
+              topOffset: 60,
+              type: "error",
+              text1: `${error?.response?.data?.message}`,
+              text2: "Please Try Again",
+            });
+          }
         });
-        setOnLoading(false);
-      });
-  };
-  // Menu Image Upload Function
-
-  const uploadMenuImage = async (fileUri) => {
-    try {
-      const response = await fetch(fileUri);
-      const blob = await response.blob();
-      const key = `${uuidv4()}.png`;
-      await Storage.put(key, blob, {
-        contentType: "image/png", // contentType is optional
-      });
-      return key;
-    } catch (err) {
-      console.log("Error uploading file:", err);
     }
   };
   return (
@@ -170,7 +197,7 @@ const AddMenuItemScreen = () => {
             {menuImg ? (
               <Image
                 source={{ uri: menuImg }}
-                style={{ height: "100%", width: "80%" }}
+                style={{ height: "100%", width: "100%", borderRadius: 10 }}
               />
             ) : (
               <>

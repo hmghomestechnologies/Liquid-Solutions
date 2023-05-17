@@ -31,22 +31,11 @@ const HotelVerticalItem = ({ data, searchedData }) => {
     "December",
   ];
   const calDate = () => {
-    let checkOutArray = searchedData.checkOutDate.split("-");
-    let newCheckOutDateFormat = `${monthNames[checkOutArray[1] - 1]} ${
-      checkOutArray[2]
-    }, ${checkOutArray[0]}`;
-    let checkInArray = searchedData.checkInDate.split("-");
-    let newCheckInDateFormat = `${monthNames[checkInArray[1] - 1]} ${
-      checkInArray[2]
-    }, ${checkInArray[0]}`;
-    var x = new Date(newCheckOutDateFormat);
-    var y = new Date(newCheckInDateFormat);
-    // seconds = milliseconds / 1000;
-    // minutes = seconds / 60;
-    // hours = minutes / 60;
-    // Days = hours / 24;
-    const diffInDays = Math.floor((x - y) / (1000 * 60 * 60 * 24));
-    setCalDays(diffInDays);
+    const date1 = new Date(searchedData.checkInDate);
+    const date2 = new Date(searchedData.checkOutDate);
+    const diffTime = Math.abs(date2.getTime() - date1.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    setCalDays(diffDays);
   };
   useEffect(() => {
     axios
@@ -65,7 +54,7 @@ const HotelVerticalItem = ({ data, searchedData }) => {
   }, []);
 
   // if (!category?.categoryName) return <TransparentSpinner />;
-
+  // console.log(searchedData);
   return (
     <TouchableOpacity
       style={{
@@ -197,11 +186,31 @@ const HotelVerticalItem = ({ data, searchedData }) => {
             Price for {`${calDays} Nights, ${searchedData.adult} Adults`}
           </Text>
           <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
-            <FormatedNumber
-              value={category?.price * calDays}
-              color={colors.primary}
-              size={SIZES.large}
-            />
+            {category?.discountedPrice === 0 ? (
+              <>
+                <FormatedNumber
+                  value={category?.price * calDays}
+                  color={colors.primary}
+                  size={SIZES.large}
+                />
+              </>
+            ) : (
+              <View style={{ flexDirection: "column" }}>
+                <View>
+                  <FormatedNumber
+                    value={category?.price * calDays}
+                    color={colors.primary}
+                    size={SIZES.large}
+                    isStrike
+                  />
+                </View>
+                <FormatedNumber
+                  value={category?.discountedPrice * calDays}
+                  color={colors.primary}
+                  size={SIZES.large}
+                />
+              </View>
+            )}
           </View>
         </View>
       </View>

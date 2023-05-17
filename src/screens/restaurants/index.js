@@ -5,6 +5,7 @@ import RestaurantDetails from "./RestaurantDetails";
 import RestaurantHome from "./RestaurantHome";
 import BasketPaymentScreen from "./BasketPaymentScreen";
 import SingleRestaurant from "./SIngleRestaurant";
+import DishesSearchResult from "./DishesSearchResult";
 
 export {
   RestaurantHome,
@@ -14,4 +15,5 @@ export {
   BasketScreen,
   BasketPaymentScreen,
   SingleRestaurant,
+  DishesSearchResult,
 };

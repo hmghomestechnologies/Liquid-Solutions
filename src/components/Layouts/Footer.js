@@ -37,20 +37,19 @@ const Footer = ({ active, searchPath }) => {
             onPress={() => navigation.navigate("HotelHome")}
           >
             <AntDesign
-              name="search1"
+              name="home"
               size={24}
-              color={active === "search" ? colors.primary : colors.secondary}
+              color={active === "home" ? colors.primary : colors.secondary}
             />
             <Text
               style={[
                 styles.text,
                 {
-                  color:
-                    active === "search" ? colors.primary : colors.secondary,
+                  color: active === "home" ? colors.primary : colors.secondary,
                 },
               ]}
             >
-              Search
+              Home
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -418,12 +417,30 @@ const Footer = ({ active, searchPath }) => {
           </TouchableOpacity>
         </>
       )}
-      <TouchableOpacity style={styles.iconContainer}>
+      {/* <TouchableOpacity style={styles.iconContainer}>
         <Ionicons
           name="md-wallet-outline"
-          size={24}
+          size={30}
           color={active === "wallet" ? colors.primary : colors.secondary}
           onPress={() => navigation.navigate("WalletIndexScreen")}
+        />
+        <Text
+          style={[
+            styles.text,
+            { color: active === "wallet" ? colors.primary : colors.secondary },
+          ]}
+        >
+          Wallet
+        </Text>
+      </TouchableOpacity> */}
+      <TouchableOpacity
+        style={styles.iconContainer}
+        onPress={() => navigation.navigate("WalletIndexScreen")}
+      >
+        <FontAwesome5
+          name="wallet"
+          size={24}
+          color={active === "wallet" ? colors.primary : colors.secondary}
         />
         <Text
           style={[

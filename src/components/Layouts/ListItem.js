@@ -10,7 +10,7 @@ import ImageCont from "../ImageCont";
 const ListItem = ({ data }) => {
   const navigation = useNavigation();
   return (
-    <View
+    <TouchableOpacity
       style={{
         width: width / 2 - 30,
         margin: 5,
@@ -21,6 +21,7 @@ const ListItem = ({ data }) => {
         ...SHADOWS.light,
         zIndex: -1,
       }}
+      onPress={() => navigation.navigate("HotelListItemDetails", { data })}
     >
       <View
         style={{
@@ -75,29 +76,10 @@ const ListItem = ({ data }) => {
             }}
           >
             <MapMarker location={data.town} />
-            {/* <TouchableOpacity
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "flex-end",
-              }}
-              onPress={() => navigation.navigate("ListItemDetails", { data })}
-            >
-              <Text
-                style={{
-                  fontSize: 12,
-                  fontWeight: "800",
-                  color: colors.darkSecondary,
-                }}
-              >
-                Details
-              </Text>
-              <AntDesign name="right" size={12} color={colors.darkSecondary} />
-            </TouchableOpacity> */}
           </View>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

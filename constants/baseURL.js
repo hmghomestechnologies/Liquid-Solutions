@@ -1,2 +1,2 @@
-const baseURL = "https://triluxy-backend.herokuapp.com/api";
+const baseURL = "https://triback.herokuapp.com/api";
 export default baseURL;

@@ -33,6 +33,8 @@ const RegisterScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const params = route.params;
+  const preset_key = "triluxyapp";
+  const cloud_name = "dc5ulgooc";
 
   const onSignUp = async () => {
     setLoading(true);
@@ -44,25 +46,43 @@ const RegisterScreen = () => {
         text2: "Please Filled all Fields",
       });
       setLoading(false);
-    } else if (profileImg === null) {
-      Toast.show({
-        topOffset: 60,
-        type: "error",
-        text1: "Profile Image needed",
-        text2: "Please Upload Your Profile Image",
-      });
-      setLoading(false);
     } else {
       let user = {
         name: fullName,
         email: email.toLowerCase(),
-        phoneNumber: phone.toLowerCase().trim(),
+        phoneNumber: phone.trim(),
         password: password,
         userRole: params.userType,
         profileImg: null,
         userStatus: "active",
       };
-      user.profileImg = await uploadFile(profileImg);
+      if (profileImg === null) {
+        user.profileImg =
+          "https://res.cloudinary.com/dc5ulgooc/image/upload/v1679504085/403554_ib5oa4.png";
+      } else {
+        const imageData = new FormData();
+        imageData.append("file", profileImg);
+        imageData.append("upload_preset", preset_key);
+        await axios
+          .post(
+            `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`,
+            imageData
+          )
+          .then((res) => {
+            user.profileImg = res?.data?.secure_url;
+          })
+          .catch((error) => {
+            Toast.show({
+              topOffset: 60,
+              type: "error",
+              text1: "Error Occured, Couldn't Image",
+              text2: "You can Update the Profile Later",
+            });
+            console.log(error);
+          });
+      }
+      user.profileImg =
+        "https://res.cloudinary.com/dc5ulgooc/image/upload/v1679504085/403554_ib5oa4.png";
       await axios
         .post(`${baseURL}/user/register`, user)
         .then((res) => {
@@ -80,14 +100,22 @@ const RegisterScreen = () => {
           }
         })
         .catch((error) => {
-          console.log(error);
-          Toast.show({
-            topOffset: 60,
-            type: "error",
-            text1: "Something Went wrong",
-            text2: "Please Try Again",
-          });
           setLoading(false);
+          if (error?.response?.data?.message === undefined) {
+            Toast.show({
+              topOffset: 60,
+              type: "error",
+              text1: `${error?.message}`,
+              text2: "Please Try Again",
+            });
+          } else {
+            Toast.show({
+              topOffset: 60,
+              type: "error",
+              text1: `${error?.response?.data?.message}`,
+              text2: "Please Try Again",
+            });
+          }
         });
     }
   };
@@ -98,21 +126,8 @@ const RegisterScreen = () => {
       quality: 0.7,
       allowsEditing: true,
     });
-    if (!result.cancelled) {
-      setProfileImg(result.uri);
-    }
-  };
-  const uploadFile = async (fileUri) => {
-    try {
-      const response = await fetch(fileUri);
-      const blob = await response.blob();
-      const key = `${uuidv4()}.png`;
-      await Storage.put(key, blob, {
-        contentType: "image/png", // contentType is optional
-      });
-      return key;
-    } catch (err) {
-      console.log("Error uploading file:", err);
+    if (!result.canceled) {
+      setProfileImg(result.assets[0]);
     }
   };
   return (
@@ -129,17 +144,17 @@ const RegisterScreen = () => {
       <View
         style={{
           width: "100%",
-          marginTop: 20,
-          height: 250,
+          marginTop: 10,
+          height: 220,
           position: "relative",
         }}
       >
-        {/* Image Uploader */}
+        {/* Image Uploa8der */}
         <View
           style={{
             width: "100%",
             position: "absolute",
-            bottom: -10,
+            bottom: -20,
             zIndex: 100,
             flexDirection: "row",
             justifyContent: "center",
@@ -156,7 +171,7 @@ const RegisterScreen = () => {
           >
             {profileImg ? (
               <Image
-                source={{ uri: profileImg }}
+                source={{ uri: profileImg?.uri }}
                 style={{ height: "100%", width: "100%", borderRadius: 999 }}
               />
             ) : (

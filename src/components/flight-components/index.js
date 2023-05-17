@@ -6,6 +6,7 @@ import RecentSearches from "./RecentSearches";
 import DiscountComponent from "./DiscountComponent";
 import FlightResultItem from "./FlightResultItem";
 import FlightDetailsItem from "./FlightDetailsItem";
+import AirportsListContainer from "./AirportsListContainer";
 
 export {
   CountryItem,
@@ -16,4 +17,5 @@ export {
   DiscountComponent,
   FlightResultItem,
   FlightDetailsItem,
+  AirportsListContainer,
 };

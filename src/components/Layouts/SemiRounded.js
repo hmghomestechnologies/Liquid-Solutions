@@ -2,11 +2,11 @@ import { View, Text } from "react-native";
 import React from "react";
 import { colors, width } from "../../../constants/theme";
 
-const SemiRounded = ({ children }) => {
+const SemiRounded = ({ children, height }) => {
   return (
     <View
       style={{
-        height: 200,
+        height: height ? height : 200,
         width: width,
         backgroundColor: colors.secondary,
         borderTopColor: colors.secondary,

@@ -61,7 +61,7 @@ const FoodMenuIndexScreen = ({}) => {
   return (
     <View
       style={{
-        paddingTop: spaces.top,
+        paddingTop: 10,
         backgroundColor: "white",
         height: "100%",
       }}

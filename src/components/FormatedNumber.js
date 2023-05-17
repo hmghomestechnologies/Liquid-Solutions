@@ -3,7 +3,7 @@ import React from "react";
 import NumberFormat from "react-number-format";
 import { colors, FONTS } from "../../constants/theme";
 
-const FormatedNumber = ({ value, size, color }) => {
+const FormatedNumber = ({ value, size, color, isStrike }) => {
   return (
     <View>
       <NumberFormat
@@ -18,6 +18,7 @@ const FormatedNumber = ({ value, size, color }) => {
               fontSize: size,
               // fontWeight: "700",
               fontFamily: FONTS.bold,
+              textDecorationLine: isStrike ? "line-through" : "none",
             }}
           >
             {value}

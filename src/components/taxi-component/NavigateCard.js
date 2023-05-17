@@ -232,7 +232,7 @@ const NavigateCard = () => {
           query={{
             key: GOOGLE_MAPS_APIKEY,
             language: "en",
-            components: "country:ng",
+            
           }}
         /> */}
         {/* <GooglePlacesAutocomplete
@@ -264,7 +264,7 @@ const NavigateCard = () => {
           query={{
             key: GOOGLE_MAPS_APIKEY,
             language: "en",
-            components: "country:ng",
+            
           }}
         /> */}
         <View

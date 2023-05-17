@@ -25,6 +25,7 @@ import { Picker } from "@react-native-picker/picker";
 import { cities } from "../../constants/cities";
 import { SearchedHotel } from "./hotel-components";
 import { useAuthContext } from "../../context/AuthContext";
+import SubHeader from "./SubHeader";
 
 const AddOtherUserInfo = () => {
   const [gender, setGender] = useState("Gender");
@@ -78,6 +79,7 @@ const AddOtherUserInfo = () => {
       town,
       zipCode,
     };
+    console.log(Data);
     // Save to db
     await axios
       .post(`${baseURL}/user/add-user-info`, Data, config)
@@ -102,7 +104,7 @@ const AddOtherUserInfo = () => {
         }
       })
       .catch((error) => {
-        console.log(error);
+        console.log(error.response);
         Toast.show({
           topOffset: 60,
           type: "error",
@@ -119,6 +121,7 @@ const AddOtherUserInfo = () => {
         showsHorizontalScrollIndicator={false}
       >
         <Spinner visible={onLoading} />
+        <SubHeader text={"Please Complete your Profile"} />
         <View
           style={{
             backgroundColor: "white",
@@ -273,7 +276,7 @@ const AddOtherUserInfo = () => {
           Icon={Zocial}
           iconName="posterous"
           setInput={setZipCode}
-          type="number-pad"
+          type="numeric"
         />
         <View style={{ height: 20, width: "100%" }} />
         {/* Submit Btn */}

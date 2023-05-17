@@ -65,19 +65,19 @@ const TaxiPayment = () => {
               "A Driver will accept your request Soon, Please await our Confirmation mail",
           });
           navigation.navigate("ManageBooking");
-          // setOrigin((prev) => ({
-          //   ...prev,
-          //   location: null,
-          //   description: null,
-          // }));
-          // setDestination((prev) => ({
-          //   ...prev,
-          //   location: null,
-          //   description: null,
-          // }));
-          // setPickupDate("Choose Date");
-          // setPickupTime("Pickup Time");
-          // setBtnLoading(false);
+          setOrigin((prev) => ({
+            ...prev,
+            location: null,
+            description: null,
+          }));
+          setDestination((prev) => ({
+            ...prev,
+            location: null,
+            description: null,
+          }));
+          setPickupDate("Choose Date");
+          setPickupTime("Pickup Time");
+          setBtnLoading(false);
         }
       })
       .catch((error) => {

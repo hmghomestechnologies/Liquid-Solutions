@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "triluxy",
+    "name": "Triluxy",
     "slug": "triluxy",
     "version": "1.0.0",
     "orientation": "default",
@@ -14,18 +14,17 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
     "android": {
+      "package": "com.triluxy.hmghomes",
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#1BC1DC"
-      },
-      "package": "com.jraph_14.triluxy"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -6,7 +6,7 @@ import ImageCont from "../ImageCont";
 
 const BasketItem = ({ data, width }) => {
   const { menuId, menuName, menuImg, price, qty, restaurantId } = data;
-  console.log(data);
+  // console.log(data);
   return (
     <View
       style={{

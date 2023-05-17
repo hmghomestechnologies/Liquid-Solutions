@@ -96,10 +96,6 @@ const RestaurantDetails = ({}) => {
   if (btnLoading) return <TransparentSpinner />;
   return (
     <View style={{ paddingTop: 23, height: "100%" }}>
-      <SearchResultHeader
-        head={city}
-        body={`${checkInDate} | ${persons} Persons`}
-      />
       <ScrollView style={{ backgroundColor: "white" }}>
         <View style={{ width: "100%", marginTop: 20 }}>
           <View
@@ -250,7 +246,7 @@ const RestaurantDetails = ({}) => {
           onBtnPress={onCompleteReservation}
         />
       </View>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={{
           position: "absolute",
           top: "50%",
@@ -273,7 +269,7 @@ const RestaurantDetails = ({}) => {
         >
           Menu Items
         </Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };
