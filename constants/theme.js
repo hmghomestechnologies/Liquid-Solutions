@@ -80,8 +80,9 @@ import image1 from "./images/image1.png";
 import logo from "./images/logo.png";
 import gettingstarted from "./images/gettingstarted.png";
 import homeImg from "./images/homeImg.png";
-
-export { image1, logo, gettingstarted, homeImg };
+import OnBoardImg from "../assets/images/OnBoard.jpg";
+import Logo from "../assets/images/Logo.png";
+export { image1, logo, gettingstarted, homeImg, OnBoardImg, Logo };
 
 export const CustomInput = {
   width: "100%",

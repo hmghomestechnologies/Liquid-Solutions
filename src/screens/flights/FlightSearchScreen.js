@@ -136,7 +136,6 @@ const SearchScreen = () => {
           }
         })
         .catch(function (error) {
-          console.error(error);
           setOnLoading(false);
           Toast.show({
             topOffset: 60,

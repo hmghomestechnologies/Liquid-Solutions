@@ -46,7 +46,7 @@ export const SecBtn = ({ text, onBtnPress }) => {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        paddingVertical: 15,
+        paddingVertical: 20,
         borderRadius: 15,
         marginVertical: 10,
         fontFamily: "OpenSansExtraBold",

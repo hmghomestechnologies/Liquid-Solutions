@@ -35,9 +35,12 @@ const RegisterScreen = () => {
   const params = route.params;
   const preset_key = "triluxyapp";
   const cloud_name = "dc5ulgooc";
+  function containsNonNumbers(input) {
+    // Use a regular expression to check if the input contains non-numeric characters
+    return /[^0-9]/.test(input);
+  }
 
   const onSignUp = async () => {
-    setLoading(true);
     if (fullName === "" || email === "" || phone === "" || password === "") {
       Toast.show({
         topOffset: 60,
@@ -45,8 +48,15 @@ const RegisterScreen = () => {
         text1: "Empty Fields",
         text2: "Please Filled all Fields",
       });
-      setLoading(false);
+    } else if (containsNonNumbers(phone)) {
+      Toast.show({
+        topOffset: 60,
+        type: "error",
+        text1: "Invalid Phone Number",
+        text2: "Please Numbers are Phone Number only",
+      });
     } else {
+      setLoading(true);
       let user = {
         name: fullName,
         email: email.toLowerCase(),

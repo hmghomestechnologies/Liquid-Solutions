@@ -1,4 +1,12 @@
-import { StyleSheet, Text, View, Image, Alert, TextInput } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  Alert,
+  TextInput,
+  ImageBackground,
+} from "react-native";
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {
@@ -7,7 +15,13 @@ import {
   MaterialIcons,
   Ionicons,
 } from "@expo/vector-icons";
-import { logo, colors, image1 } from "../../../constants/theme";
+import {
+  logo,
+  colors,
+  image1,
+  Logo,
+  OnBoardImg,
+} from "../../../constants/theme";
 import { InputField, LoadingBtn, SecBtn } from "../../components/Forms";
 import { MainHeading } from "../../components/Typography";
 import Toast from "react-native-toast-message";
@@ -37,14 +51,29 @@ const LoginScreen = () => {
       //   text2: "Login Succesful",
       // });
       navigation.navigate("HotelHome");
-    } catch (e) {
-      // saving error
-      Toast.show({
-        topOffset: 60,
-        type: "error",
-        text1: "Error occur!!!",
-        text2: "Please Try Again",
-      });
+    } catch (error) {
+      if (error.response?.data.message) {
+        Toast.show({
+          topOffset: 60,
+          type: "error",
+          text1: `${error.response?.data.message}`,
+          text2: "Please Try Again",
+        });
+      } else if (error.response?.data === undefined) {
+        Toast.show({
+          topOffset: 60,
+          type: "error",
+          text1: `${error?.message}`,
+          text2: "Please Try Again",
+        });
+      } else {
+        Toast.show({
+          topOffset: 60,
+          type: "error",
+          text1: `${error.response?.data}`,
+          text2: "Please Try Again",
+        });
+      }
       console.log(e);
     }
   };
@@ -87,78 +116,119 @@ const LoginScreen = () => {
     }
   };
   return (
-    <View
+    <ImageBackground
+      source={OnBoardImg}
       style={{
-        height: "100%",
         flex: 1,
-        alignItems: "center",
-        // justifyContent: "center",
-        width: "100%",
-        backgroundColor: "white",
+        alignItems: "flex-end",
+        justifyContent: "flex-end",
       }}
     >
-      <Spinner visible={isLoading} />
-      <View style={{ width: "100%", marginTop: 20 }}>
-        <Image source={image1} style={{ height: 250, width: "100%" }} />
-      </View>
-      <View style={{ paddingHorizontal: 20, width: "100%" }}>
-        <View style={{ marginVertical: 40 }}>
-          <MainHeading title={"Sign In"} marginVertical={5} />
+      <View
+        style={{
+          height: "100%",
+          width: "100%",
+          backgroundColor: "rgba(20, 62, 100, 0.6)",
+          flexDirection: "column",
+          justifyContent: "flex-end",
+          alignItems: "center",
+          // paddingBottom: 40,
+          // paddingHorizontal: 40,
+        }}
+      >
+        <Spinner visible={isLoading} />
+        <View
+          style={{
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Image source={Logo} style={{ height: 60, width: 60 }} />
           <Text
             style={{
-              fontFamily: "OpenSansBold",
-              textAlign: "center",
-              color: colors.secondary,
+              fontSize: 30,
+              fontWeight: "700",
+              color: "white",
+              marginBottom: 50,
             }}
           >
-            Don't Have an Account?{" "}
-            <Text
-              style={{
-                fontSize: 16,
-                color: colors.primary,
-                textDecorationLine: "underline",
-              }}
-              onPress={() =>
-                navigation.navigate("RegisterScreen", { userType: "User" })
-              }
-            >
-              Sign Up
-            </Text>
+            Triluxy
           </Text>
         </View>
-        <View style={{ width: "100%", zIndex: 20 }}>
-          <KeyboardAwareScrollView
-            viewIsInsideTabBar={true}
-            extraHeight={200}
-            enableOnAndroid={true}
+        <View
+          style={{
+            backgroundColor: "white",
+            width: "100%",
+            borderTopLeftRadius: 40,
+            borderTopRightRadius: 40,
+            paddingHorizontal: 30,
+            paddingTop: 20,
+          }}
+        >
+          <Text
+            style={{
+              color: colors.secondary,
+              fontSize: 30,
+              fontWeight: "600",
+              textAlign: "left",
+              marginVertical: 10,
+              marginBottom: 20,
+            }}
           >
-            <InputField
-              value={email.toLowerCase().trim()}
-              placeholder="Enter Your Email"
-              Icon={MaterialIcons}
-              iconName="email"
-              setInput={setEmail}
-              type={"email-address"}
-            />
-            <InputField
-              value={password}
-              placeholder="Password"
-              Icon={AntDesign}
-              iconName="lock1"
-              setInput={setPassword}
-              password
-            />
-            <View style={{ marginTop: 20 }}>
-              {loading ? (
-                <LoadingBtn />
-              ) : (
+            Login
+          </Text>
+          <View style={{ width: "100%", zIndex: 20 }}>
+            <KeyboardAwareScrollView
+              viewIsInsideTabBar={true}
+              extraHeight={200}
+              enableOnAndroid={true}
+            >
+              <InputField
+                value={email.toLowerCase().trim()}
+                placeholder="Enter Your Email"
+                Icon={MaterialIcons}
+                iconName="email"
+                setInput={setEmail}
+                type={"email-address"}
+              />
+              <InputField
+                value={password}
+                placeholder="Password"
+                Icon={AntDesign}
+                iconName="lock1"
+                setInput={setPassword}
+                password
+              />
+              <View style={{ marginTop: 10 }}>
                 <SecBtn text={"Login"} onBtnPress={handleSubmit} />
-              )}
-            </View>
-          </KeyboardAwareScrollView>
+              </View>
+              <Text
+                style={{
+                  fontFamily: "OpenSansBold",
+                  textAlign: "center",
+                  color: colors.secondary,
+                }}
+              >
+                Don't Have an Account?{" "}
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: colors.primary,
+                    textDecorationLine: "underline",
+                  }}
+                  onPress={() =>
+                    navigation.navigate("RegisterScreen", { userType: "User" })
+                  }
+                >
+                  Sign Up
+                </Text>
+              </Text>
+            </KeyboardAwareScrollView>
+          </View>
         </View>
       </View>
-    </View>
+    </ImageBackground>
   );
 };
 

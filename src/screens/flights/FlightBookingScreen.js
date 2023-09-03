@@ -116,13 +116,13 @@ const FlightBookingScreen = () => {
         setOnLoading(false);
       })
       .catch(function (error) {
-        console.error(error.message);
+        console.error(error.response.data.description);
         setOnLoading(false);
         navigation.goBack();
         Toast.show({
           topOffset: 60,
           type: "error",
-          text1: "Error Occured while getting Flight Details",
+          text1: `${error.response.data.description}`,
           text2: "Please Try Again",
         });
       });

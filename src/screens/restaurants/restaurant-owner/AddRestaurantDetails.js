@@ -5,6 +5,7 @@ import {
   ScrollView,
   Image,
   TextInput,
+  StyleSheet,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import {
@@ -34,6 +35,8 @@ import { useRestaurantContext } from "../../../../context/RestaurantContext";
 import { TransparentSpinner } from "../../../components";
 import { Picker } from "@react-native-picker/picker";
 import { states } from "../../../../constants/states";
+import { GOOGLE_MAPS_APIKEY } from "../../../../constants/ApiKeys";
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 
 const AddRestaurantDetails = () => {
   const [screenLoading, setScreenLoading] = useState(true);
@@ -51,6 +54,7 @@ const AddRestaurantDetails = () => {
   const [onLoading, setOnLoading] = useState(false);
   const [citySelected, setCitySelected] = useState(false);
   const [showLocationCont, setShowLocationCont] = useState(false);
+  const [showMapCont, setShowMapCont] = useState(false);
   const [cityLoading, setCityLoading] = useState(false);
   const [filteredCities, setFilteredCities] = useState([]);
   const [focus, setFocus] = useState(false);
@@ -58,6 +62,17 @@ const AddRestaurantDetails = () => {
   const navigation = useNavigation();
   const { userId, config } = useAuthContext();
   const { currentRestaurant, setCurrentRestaurant } = useRestaurantContext();
+
+  const days_of_week = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+
   const pickRestaurantImg = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -165,24 +180,23 @@ const AddRestaurantDetails = () => {
     await axios
       .post(`${baseURL}/restaurant/admin`, restaurantDetails, config)
       .then((res) => {
-        if (res.status == 201) {
+        setOnLoading(false);
+        if (res.status === 201) {
           Toast.show({
             topOffset: 60,
             type: "success",
             text1: "Restaurant Details Added Succesfully",
             text2: "You can now Manage Restaurant Details",
           });
-          setOnLoading(false);
           setCurrentRestaurant(res.data);
           navigation.navigate("RestaurantAdminHome");
         } else {
           Toast.show({
             topOffset: 60,
             type: "error",
-            text1: "Something Went wrong",
+            text1: `${res?.data?.message}`,
             text2: "Please Try Again",
           });
-          setOnLoading(false);
         }
       })
       .catch((error) => {
@@ -242,139 +256,80 @@ const AddRestaurantDetails = () => {
             ) : (
               <>
                 <Ionicons name="images" size={80} color={colors.secondary} />
-                <Text>Upload Restaurant Featured Image</Text>
+                <Text>Snap Featured Image</Text>
               </>
             )}
           </TouchableOpacity>
         </View>
         <InputField
           value={restaurantName}
-          placeholder="Enter Restaurant Name"
+          placeholder="Name"
           Icon={Ionicons}
           iconName="restaurant-outline"
           setInput={setRestaurantName}
         />
-        <InputField
-          value={address}
-          placeholder="Restaurant Address"
-          Icon={FontAwesome}
-          iconName="opencart"
-          setInput={setAddress}
-        />
+        {/* Restaurant Address, Address From Map */}
+        <TouchableOpacity
+          style={{
+            width: "100%",
+            paddingVertical: 15,
+            borderColor: colors.darkSecondary,
+            borderWidth: 1,
+            borderRadius: 10,
+            backgroundColor: "white",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingHorizontal: 10,
+            marginVertical: 10,
+          }}
+          onPress={() => setShowMapCont(true)}
+        >
+          <MaterialCommunityIcons
+            name="map-marker-radius-outline"
+            size={20}
+            color={"red"}
+          />
+          <Text
+            style={{
+              // fontFamily: FONTS.semiBold,
+              color: colors.gray,
+              width: "90%",
+              fontWeight: "500",
+            }}
+          >
+            {address ? address : "Address"}
+          </Text>
+        </TouchableOpacity>
         {/* Town  Input Container*/}
-        {citySelected ? (
-          <View
+        <TouchableOpacity
+          style={{
+            width: "100%",
+            paddingVertical: 15,
+            borderColor: colors.darkSecondary,
+            borderWidth: 1,
+            borderRadius: 10,
+            backgroundColor: "white",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingHorizontal: 10,
+            marginVertical: 10,
+          }}
+          onPress={() => setShowLocationCont(true)}
+        >
+          <Ionicons name="ios-map-outline" size={20} color={"red"} />
+          <Text
             style={{
-              width: "100%",
-              position: "relative",
-              marginVertical: 5,
-              alignItems: "center",
+              color: colors.gray,
+              width: "90%",
+              fontWeight: "500",
             }}
           >
-            <MaterialCommunityIcons
-              name={"google-maps"}
-              size={24}
-              color={"red"}
-              style={{
-                position: "absolute",
-                left: 10,
-                top: 10,
-                zIndex: 1,
-              }}
-            />
-            <Text
-              style={{
-                fontFamily: FONTS.semiBold,
-                color: colors.darkPrimary,
-                fontSize: SIZES.medium,
-                width: "100%",
-                paddingHorizontal: 15,
-                paddingVertical: 15,
-                borderColor: colors.darkSecondary,
-                borderWidth: 1,
-                fontWeight: "600",
-                paddingLeft: 40,
-                borderRadius: 10,
-                backgroundColor: "white",
-              }}
-            >
-              {town}
-            </Text>
-            <FontAwesome
-              name={"times-circle"}
-              size={24}
-              color={"gray"}
-              style={{
-                position: "absolute",
-                right: 10,
-                top: 10,
-                zIndex: 1,
-              }}
-              onPress={() => {
-                setCitySelected(false);
-              }}
-            />
-          </View>
-        ) : (
-          <View
-            style={{
-              width: "100%",
-              position: "relative",
-              marginVertical: 5,
-              //   flexDirection: "row",
-              //   alignItems: "center",
-              //   justifyContent: "space-between",
-            }}
-          >
-            <Ionicons
-              name={"md-search"}
-              size={24}
-              color={"gray"}
-              style={{
-                position: "absolute",
-                left: 10,
-                top: 10,
-                zIndex: 1,
-              }}
-            />
-            <TouchableOpacity
-              style={{
-                width: "100%",
-                paddingHorizontal: 15,
-                paddingVertical: 13,
-                borderColor: colors.darkSecondary,
-                borderWidth: 1,
-                paddingLeft: 40,
-                borderRadius: 10,
-                backgroundColor: "white",
-              }}
-              onPress={() => setShowLocationCont(true)}
-            >
-              <Text
-                style={{
-                  fontFamily: FONTS.medium,
-                  color: colors.secondary,
-                  fontWeight: "600",
-                  fontSize: SIZES.medium,
-                }}
-              >
-                Enter Restaurant City
-              </Text>
-            </TouchableOpacity>
-            <FontAwesome
-              name={"times-circle"}
-              size={24}
-              color={"gray"}
-              style={{
-                position: "absolute",
-                right: 10,
-                top: 10,
-                zIndex: 1,
-              }}
-              onPress={onBlur}
-            />
-          </View>
-        )}
+            {town ? town : "City"}
+          </Text>
+        </TouchableOpacity>
+
         {/* State Picker */}
         <View
           style={{
@@ -394,26 +349,85 @@ const AddRestaurantDetails = () => {
             }}
             onValueChange={(itemValue) => setState(itemValue)}
           >
-            <Picker.Item label="Choose State" value="" />
+            <Picker.Item label="Choose State" style={styles.text} value="" />
             {states.map((item, index) => (
-              <Picker.Item key={index} label={item.state} value={item.state} />
+              <Picker.Item
+                key={index}
+                style={styles.text}
+                label={item.state}
+                value={item.state}
+              />
             ))}
           </Picker>
         </View>
-        <InputField
-          value={openDaysStart}
-          placeholder="Restaurant Opening Day"
-          Icon={MaterialCommunityIcons}
-          iconName="open-source-initiative"
-          setInput={setOpenDaysStart}
-        />
-        <InputField
-          value={openDaysEnd}
-          placeholder="Restaurant Closing Day"
-          Icon={MaterialCommunityIcons}
-          iconName="close-circle-multiple"
-          setInput={setOpenDaysEnd}
-        />
+        {/* Opening Day Picker */}
+        <View
+          style={{
+            backgroundColor: "white",
+            borderWidth: 1,
+            borderColor: colors.darkSecondary,
+            borderRadius: 10,
+            marginVertical: 5,
+            paddingHorizontal: 4,
+          }}
+        >
+          <Picker
+            selectedValue={openDaysStart}
+            style={{
+              height: 50,
+              width: "100%",
+            }}
+            onValueChange={(itemValue) => setOpenDaysStart(itemValue)}
+          >
+            <Picker.Item
+              label="Weekly Opening Day"
+              style={styles.text}
+              value=""
+            />
+            {days_of_week.map((item, index) => (
+              <Picker.Item
+                key={index}
+                style={styles.text}
+                label={item}
+                value={item}
+              />
+            ))}
+          </Picker>
+        </View>
+        {/* Closing Day Picker */}
+        <View
+          style={{
+            backgroundColor: "white",
+            borderWidth: 1,
+            borderColor: colors.darkSecondary,
+            borderRadius: 10,
+            marginVertical: 5,
+            paddingHorizontal: 4,
+          }}
+        >
+          <Picker
+            selectedValue={openDaysEnd}
+            style={{
+              height: 50,
+              width: "100%",
+            }}
+            onValueChange={(itemValue) => setOpenDaysEnd(itemValue)}
+          >
+            <Picker.Item
+              label="Weekly Closing Day"
+              style={styles.text}
+              value=""
+            />
+            {days_of_week.map((item, index) => (
+              <Picker.Item
+                key={index}
+                style={styles.text}
+                label={item}
+                value={item}
+              />
+            ))}
+          </Picker>
+        </View>
         <InputField
           value={description}
           placeholder="More Info About Restaurant"
@@ -433,6 +447,7 @@ const AddRestaurantDetails = () => {
         <PrimaryBtn text={"Add Restaurant Details"} onBtnPress={onSubmitForm} />
         <View style={{ height: 80, width: "100%" }} />
       </ScrollView>
+      {/* City Container */}
       {showLocationCont && (
         <View
           style={{
@@ -547,8 +562,83 @@ const AddRestaurantDetails = () => {
           </View>
         </View>
       )}
+
+      {/* Map Container */}
+      {showMapCont && (
+        <View
+          style={{
+            width: "100%",
+            backgroundColor: "white",
+            height: "100%",
+            position: "absolute",
+            top: 0,
+            paddingVertical: 40,
+            paddingHorizontal: 20,
+          }}
+        >
+          <FontAwesome5
+            name={"times"}
+            size={30}
+            color={"gray"}
+            style={{
+              position: "absolute",
+              right: 20,
+              top: 10,
+              zIndex: 1,
+            }}
+            onPress={() => setShowMapCont(false)}
+          />
+
+          <View>
+            <View>
+              <GooglePlacesAutocomplete
+                placeholder="Enter Your Delivery Address"
+                nearbyPlacesAPI="GooglePlacesSearch"
+                debounce={400}
+                styles={{
+                  container: { flex: 0 },
+                  textInput: {
+                    fontSize: 15,
+                    padding: 0,
+                    backgroundColor: "#ffffff",
+                    borderColor: colors.bgGray,
+                    borderWidth: 1,
+                    // ...SHADOWS.light,
+                  },
+                  textInputContainer: {
+                    // paddingHorizontal: 20,
+                    paddingVertical: 25,
+                  },
+                }}
+                onPress={(data, details = null) => {
+                  setAddress(data.description);
+                  setLat(details.geometry.location.lat);
+                  setLng(details.geometry.location.lng);
+                  console.log(data);
+                  setShowMapCont(false);
+                }}
+                fetchDetails={true}
+                returnKeyType={"search"}
+                enablePoweredByContainer={false}
+                minLength={2}
+                query={{
+                  key: GOOGLE_MAPS_APIKEY,
+                  language: "en",
+                }}
+              />
+            </View>
+          </View>
+        </View>
+      )}
     </>
   );
 };
 
 export default AddRestaurantDetails;
+const styles = StyleSheet.create({
+  text: {
+    color: colors.gray,
+    fontSize: 15,
+    fontWeight: "500",
+  },
+});

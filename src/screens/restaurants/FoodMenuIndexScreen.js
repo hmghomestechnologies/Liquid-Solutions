@@ -51,12 +51,6 @@ const FoodMenuIndexScreen = ({}) => {
       }
     })();
   }, [authUser]);
-  useEffect(() => {
-    const tempBasket = basket.filter((item) => item.restaurantId === id);
-    setCurrentBasket(tempBasket);
-    console.log(currentBasket);
-  }, [basket]);
-  console.log(menuItems);
   if (btnLoading || !menuItems) return <TransparentSpinner />;
   return (
     <View

@@ -74,14 +74,30 @@ const AuthContextProvider = ({ children }) => {
         setIsLoading(false);
       })
       .catch((error) => {
-        console.log(error);
-        Toast.show({
-          topOffset: 60,
-          type: "error",
-          text1: "Invalid Emaill or Password",
-          text2: "Please Try Again",
-        });
         setIsLoading(false);
+        console.log(error);
+        if (error.response?.data.message) {
+          Toast.show({
+            topOffset: 60,
+            type: "error",
+            text1: `${error.response?.data.message}`,
+            text2: "Please Try Again",
+          });
+        } else if (error.response?.data === undefined) {
+          Toast.show({
+            topOffset: 60,
+            type: "error",
+            text1: `${error?.message}`,
+            text2: "Please Try Again",
+          });
+        } else {
+          Toast.show({
+            topOffset: 60,
+            type: "error",
+            text1: `${error.response?.data}`,
+            text2: "Please Try Again",
+          });
+        }
       });
   };
   const isLoggedIn = async () => {

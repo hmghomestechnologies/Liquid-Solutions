@@ -13,37 +13,50 @@ import {
   CheckBox,
   FilterContainer,
   SearchResultHeader,
-  Spinner,
   SubHeader,
 } from "../../components";
 import { SecBtn } from "../../components/Forms";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useRestaurantContext } from "../../../context/RestaurantContext";
 import { RestaurantVerticalItem } from "../../components/restaurant-components";
+import Spinner from "react-native-loading-spinner-overlay";
+import baseURL from "../../../constants/baseURL";
+import axios from "axios";
+import { useAuthContext } from "../../../context/AuthContext";
 
 const ResSearchResult = () => {
   const route = useRoute();
   const { restaurants } = useRestaurantContext();
   const { searchedData } = route?.params;
-  const [cityRestaurants, setCityRestaurants] = useState(null);
+  const [cityRestaurants, setCityRestaurants] = useState([]);
   const [onFilter, setOnFilter] = useState(false);
   const [onFreeCancel, setOnFreeCancel] = useState(false);
   const [onHotel, setOnHotel] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigation();
+  const { config } = useAuthContext();
+
   const getSearchedCityRestaurants = async () => {
-    const tempRestaurants = await restaurants.filter(
-      (i) => i.town === searchedData.city
-    );
-    await setCityRestaurants(tempRestaurants);
+    setLoading(true);
+    await axios
+      .get(`${baseURL}/restaurant/restaurants/${searchedData.city}`, config)
+      .then((res) => {
+        setCityRestaurants(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setCityRestaurants([]);
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
     getSearchedCityRestaurants();
   }, []);
-  if (!cityRestaurants) return <Spinner />;
-  console.log(cityRestaurants.length);
   return (
     <View>
+      <Spinner visible={loading} />
       <View
         style={{
           position: "absolute",
@@ -135,7 +148,7 @@ const ResSearchResult = () => {
                   marginBottom: 20,
                 }}
               >
-                Results(S)
+                Results({cityRestaurants.length})
               </Text>
             }
             renderItem={({ item }) => (
